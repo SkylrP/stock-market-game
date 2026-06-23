@@ -1,5 +1,6 @@
 import { generateCode } from "./lobby"
 import type { Env } from "./lobby-types"
+export { LobbyDO } from "./lobby-do"
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
