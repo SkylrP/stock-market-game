@@ -1,0 +1,90 @@
+.board-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.board-container::-webkit-scrollbar {
+  display: none;
+}
+
+.board-strip {
+  display: flex;
+  gap: 4px;
+  padding: 0 12px;
+  min-width: max-content;
+}
+
+.board-square {
+  flex-shrink: 0;
+  width: 52px;
+  height: 68px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.board-square.current {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.board-square.start {
+  background: rgba(0, 212, 255, 0.1);
+}
+
+.square-top {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.square-icon {
+  font-size: 10px;
+}
+
+.square-ticker {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+
+.square-label {
+  font-size: 7px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.1;
+  max-width: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.square-players {
+  display: flex;
+  gap: 3px;
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.player-piece {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}

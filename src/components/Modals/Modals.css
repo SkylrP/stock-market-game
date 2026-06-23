@@ -1,0 +1,357 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 0.2s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 24px;
+}
+
+.modal {
+  padding: 24px;
+  width: 100%;
+  max-width: 360px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.modal-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.owned-badge {
+  padding: 4px 10px;
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--accent-cyan);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.modal-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+}
+
+.price-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.price-value {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent-cyan);
+}
+
+.price-change {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: right;
+}
+
+.dividend-info {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.div-percent {
+  color: var(--accent-green);
+}
+
+.modal-cash {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+.modal-cash strong {
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+}
+.modal-qbi {
+  color: var(--accent-cyan);
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.dividend-notification {
+  text-align: center;
+  font-size: 14px;
+  color: var(--accent-green);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: rgba(105, 219, 124, 0.1);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(105, 219, 124, 0.2);
+  animation: fadeIn 0.3s ease;
+}
+.dividend-notification strong {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.pnl-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 6px 12px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+}
+.pnl-label {
+  color: var(--text-muted);
+}
+.pnl-value {
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-actions-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.trade-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.trade-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.trade-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trade-input {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 8px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  min-width: 0;
+}
+
+.trade-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.max-btn {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: var(--accent-cyan) !important;
+}
+
+.trade-total {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.trade-total strong {
+  color: var(--text-primary);
+}
+
+.skip-btn {
+  margin-top: 4px;
+  opacity: 0.6;
+}
+
+.meeting-option {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meeting-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.ticker-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.ticker-chip {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.2s;
+}
+
+.ticker-chip.selected {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--accent-cyan);
+}
+
+.trade-type-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.toggle-btn.active-buy {
+  background: var(--accent-green);
+  color: #000;
+}
+
+.toggle-btn.active-sell {
+  background: var(--accent-red);
+  color: #fff;
+}
+
+.winner-modal {
+  text-align: center;
+  padding: 40px 24px;
+}
+
+.winner-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.winner-title {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffd740, #ff9f43);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.winner-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.btn-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.btn-close:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-warning {
+  border: 2px solid var(--accent-red) !important;
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 107, 107, 0.05)) !important;
+}
+.modal-warning h3 {
+  color: var(--accent-red);
+}
+
+.warning-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.warning-tickers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.dice-pair {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.warning-chip {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(255, 107, 107, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent-red);
+}

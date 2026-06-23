@@ -1,0 +1,105 @@
+.slot-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.slot-machine {
+  padding: 32px;
+  text-align: center;
+  min-width: 280px;
+  animation: slideUp 0.3s ease;
+}
+
+.slot-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-purple);
+  margin-bottom: 24px;
+}
+
+.slot-reels {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.slot-reel {
+  width: 72px;
+  height: 80px;
+  border-radius: var(--radius);
+  background: var(--bg-primary);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.slot-strip {
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes scrollStrip {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(calc(var(--item-count, 16) * -80px + 80px)); }
+}
+
+.slot-strip-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.slot-symbol {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.slot-spinning-text {
+  color: var(--text-muted);
+  font-size: 14px;
+  animation: pulse 1s infinite;
+}
+
+.slot-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.slot-multiplier {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffd740, #ff9f43);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slot-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.slot-shares {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.slot-shares strong {
+  color: var(--accent-green);
+}

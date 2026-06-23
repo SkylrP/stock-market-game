@@ -1,0 +1,110 @@
+.portfolio-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.empty-icon {
+  font-size: 18px;
+}
+
+.stock-portfolio {
+  padding: 0 12px;
+}
+
+.portfolio-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.portfolio-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.portfolio-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  animation: fadeIn 0.3s ease;
+  flex-wrap: wrap;
+}
+
+.portfolio-item.clickable {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.portfolio-item.clickable:hover {
+  background: var(--bg-card-hover);
+}
+
+.stock-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stock-ticker {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.stock-shares {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.stock-value-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.stock-price {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stock-change {
+  font-size: 10px;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stock-total {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stock-pnl {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.stock-pnl .pnl-label {
+  color: var(--text-muted);
+}
+.stock-pnl .pnl-value {
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}

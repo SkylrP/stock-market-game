@@ -1,0 +1,101 @@
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.game-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.top-bar {
+  padding: 8px 12px;
+  padding-top: max(8px, env(safe-area-inset-top));
+  flex-shrink: 0;
+}
+
+.board-area {
+  flex: 0 0 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.action-area {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 4px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+}
+
+.work-icon {
+  font-size: 24px;
+}
+
+.bottom-bar {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  padding-bottom: max(8px, var(--safe-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border);
+}
+
+.end-turn-area {
+  padding: 4px 0;
+}
+
+.sell-before-btn {
+  margin: 4px 12px;
+  width: calc(100% - 24px);
+}
+
+.bottom-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.help-btn {
+  width: 36px;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.restart-btn {
+  align-self: center;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.restart-btn:hover {
+  opacity: 1;
+}
+
+.confirm-restart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px;
+}
+.confirm-text {
+  font-size: 12px;
+  color: var(--accent-red);
+  font-weight: 600;
+}
