@@ -17,7 +17,14 @@ import {
 } from './components/Modals/Modals';
 import { HelpModal } from './components/HelpModal/HelpModal';
 import { LeaderboardModal } from './components/LeaderboardModal/LeaderboardModal';
+import { MenuScreen } from './components/MenuScreen/MenuScreen';
+import { MultiplayerLobby } from './components/MultiplayerLobby/MultiplayerLobby';
 import './App.css';
+
+interface LobbyPlayer {
+  id: number
+  nickname: string
+}
 
 function GameScreen() {
   const { state, dispatch } = useGame();
@@ -136,10 +143,39 @@ function GameScreen() {
 }
 
 function App() {
-  const { state } = useGame();
+  const { state, dispatch } = useGame();
+  const [screen, setScreen] = useState<'menu' | 'setup' | 'lobby' | 'game'>('menu');
+  const [lobbyPlayers, setLobbyPlayers] = useState<LobbyPlayer[]>([]);
 
-  if (state.gamePhase === 'SETUP') {
-    return <SetupScreen />;
+  const handleLocalGame = () => {
+    setScreen('setup');
+  };
+
+  const handleMultiplayerStart = (players: LobbyPlayer[]) => {
+    setLobbyPlayers(players);
+    for (const p of players) {
+      dispatch({ type: 'ADD_PLAYER', payload: { name: p.nickname, luckyNumber: ((p.id - 1) % 6) + 1 } });
+    }
+    dispatch({ type: 'SET_WIN_AMOUNT', payload: 100000 });
+    dispatch({ type: 'START_GAME' });
+    setScreen('game');
+  };
+
+  if (screen === 'menu') {
+    return <MenuScreen onLocalGame={handleLocalGame} onMultiplayer={() => setScreen('lobby')} />;
+  }
+
+  if (screen === 'lobby') {
+    return <MultiplayerLobby onStartGame={handleMultiplayerStart} onBack={() => setScreen('menu')} />;
+  }
+
+  if (screen === 'setup') {
+    return (
+      <>
+        {state.gamePhase === 'SETUP' && <SetupScreen />}
+        {state.gamePhase !== 'SETUP' && <GameScreen />}
+      </>
+    );
   }
 
   return <GameScreen />;
