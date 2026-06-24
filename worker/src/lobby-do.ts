@@ -70,7 +70,8 @@ export class LobbyDO extends DurableObject {
   async webSocketMessage(ws: WebSocket, raw: string | ArrayBuffer) {
     // Re-register connection if DO hibernated (in-memory connections Map was lost)
     if (!this.connections.has(ws)) {
-      this.connections.set(ws, 0)
+      const idx = this.getActive().indexOf(ws)
+      this.connections.set(ws, idx >= 0 && idx < this.players.length ? this.players[idx].id : 0)
     }
 
     const text = typeof raw === "string" ? raw : new TextDecoder().decode(raw)
