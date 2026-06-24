@@ -2,6 +2,9 @@ name = "stock-market-game"
 main = "src/index.ts"
 compatibility_date = "2025-04-01"
 
+[assets]
+directory = "../dist"
+
 [[durable_objects.bindings]]
 name = "LOBBY_DO"
 class_name = "LobbyDO"

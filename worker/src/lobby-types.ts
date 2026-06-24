@@ -1,5 +1,6 @@
 export interface Env {
   LOBBY_DO: DurableObjectNamespace
+  ASSETS: Fetcher
 }
 
 export interface LobbyPlayer {
