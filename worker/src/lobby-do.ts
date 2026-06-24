@@ -62,7 +62,7 @@ export class LobbyDO extends DurableObject {
     this.connections.set(ws, id)
 
     this.sendTo(ws, { type: "WELCOME", playerId: id, players: this.players })
-    this.broadcast({ type: "JOINED", player })
+    this.broadcastExcept(ws, { type: "JOINED", player })
     this.persist()
   }
 
@@ -79,6 +79,15 @@ export class LobbyDO extends DurableObject {
     const data = JSON.stringify(msg)
     for (const [ws] of this.connections) {
       try { ws.send(data) } catch { }
+    }
+  }
+
+  private broadcastExcept(wsSkip: WebSocket, msg: LobbyServerMessage) {
+    const data = JSON.stringify(msg)
+    for (const [ws] of this.connections) {
+      if (ws !== wsSkip) {
+        try { ws.send(data) } catch { }
+      }
     }
   }
 

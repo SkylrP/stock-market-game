@@ -6,7 +6,11 @@ import './SetupScreen.css';
 
 const LUCKY_NUMBERS = [1, 2, 3, 4, 5, 6];
 
-export function SetupScreen() {
+interface Props {
+  onBack: () => void
+}
+
+export function SetupScreen({ onBack }: Props) {
   const { dispatch } = useGame();
   const [players, setPlayers] = useState<{ name: string; luckyNumber: number | null }[]>([
     { name: 'Player 1', luckyNumber: null },
@@ -53,6 +57,9 @@ export function SetupScreen() {
 
   return (
     <div className="setup-screen">
+      <button className="btn btn-ghost btn-sm lobby-back" onClick={onBack}>
+        ← Back
+      </button>
       <div className="setup-header">
         <div className="setup-logo">
           <span className="logo-icon">📈</span>

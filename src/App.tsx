@@ -26,7 +26,7 @@ interface LobbyPlayer {
   nickname: string
 }
 
-function GameScreen() {
+function GameScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
   const { state, dispatch } = useGame();
   const [confirmingNewGame, setConfirmingNewGame] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -115,6 +115,9 @@ function GameScreen() {
             <button className="btn btn-ghost btn-sm" onClick={() => setConfirmingNewGame(true)}>
               New Game
             </button>
+            <button className="btn btn-ghost btn-sm" onClick={onBackToMenu}>
+              Menu
+            </button>
             <a
               className="btn btn-ghost btn-sm"
               href="https://spot.fund/StockMarketGame"
@@ -151,6 +154,11 @@ function App() {
     setScreen('setup');
   };
 
+  const handleBackToMenu = () => {
+    dispatch({ type: 'NEW_GAME' });
+    setScreen('menu');
+  };
+
   const handleMultiplayerStart = (players: LobbyPlayer[]) => {
     setLobbyPlayers(players);
     for (const p of players) {
@@ -172,13 +180,15 @@ function App() {
   if (screen === 'setup') {
     return (
       <>
-        {state.gamePhase === 'SETUP' && <SetupScreen />}
-        {state.gamePhase !== 'SETUP' && <GameScreen />}
+        {state.gamePhase === 'SETUP' && <SetupScreen onBack={handleBackToMenu} />}
+        {state.gamePhase !== 'SETUP' && (
+          <GameScreen onBackToMenu={handleBackToMenu} />
+        )}
       </>
     );
   }
 
-  return <GameScreen />;
+  return <GameScreen onBackToMenu={handleBackToMenu} />;
 }
 
 export default App;

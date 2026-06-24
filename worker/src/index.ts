@@ -9,7 +9,9 @@ export default {
 
     if (path === "/api/create" && request.method === "POST") {
       const code = generateCode()
-      env.LOBBY_DO.idFromName(code)
+      const id = env.LOBBY_DO.idFromName(code)
+      const stub = env.LOBBY_DO.get(id)
+      await stub.fetch(new Request("https://dummy/"))
       return new Response(JSON.stringify({ code }), {
         headers: { "Content-Type": "application/json" },
       })
