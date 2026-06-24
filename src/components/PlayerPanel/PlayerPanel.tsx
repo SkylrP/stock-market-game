@@ -4,11 +4,13 @@ import './PlayerPanel.css';
 
 interface Props {
   onOpenLeaderboard: () => void;
+  myPlayerIndex?: number;
 }
 
-export function PlayerPanel({ onOpenLeaderboard }: Props) {
+export function PlayerPanel({ onOpenLeaderboard, myPlayerIndex }: Props) {
   const { state } = useGame();
-  const player = state.players[state.currentPlayerIndex];
+  const playerIdx = myPlayerIndex ?? state.currentPlayerIndex;
+  const player = state.players[playerIdx];
 
   if (!player) return null;
 

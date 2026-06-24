@@ -10,13 +10,13 @@ interface LobbyPlayer {
 }
 
 interface Props {
-  onStartGame: (players: LobbyPlayer[]) => void
+  onSetup: (ws: WebSocket, playerId: number, players: LobbyPlayer[]) => void
   onBack: () => void
 }
 
 type LobbyPhase = 'CHOOSE' | 'CREATE' | 'JOIN_INPUT' | 'WAITING'
 
-export function MultiplayerLobby({ onStartGame, onBack }: Props) {
+export function MultiplayerLobby({ onSetup, onBack }: Props) {
   const [phase, setPhase] = useState<LobbyPhase>('CHOOSE')
   const [code, setCode] = useState('')
   const [joinCode, setJoinCode] = useState('')
@@ -26,6 +26,7 @@ export function MultiplayerLobby({ onStartGame, onBack }: Props) {
   const [playerId, setPlayerId] = useState(0)
   const [error, setError] = useState('')
   const wsRef = useRef<WebSocket | null>(null)
+  const playerIdRef = useRef(0)
 
   const reset = useCallback(() => {
     wsRef.current?.close()
@@ -40,7 +41,9 @@ export function MultiplayerLobby({ onStartGame, onBack }: Props) {
   }, [])
 
   useEffect(() => {
-    return () => { wsRef.current?.close() }
+    return () => {
+      // Only close if we haven't moved to setup (wsRef will be null if consumed)
+    }
   }, [])
 
   const connectWebSocket = useCallback((c: string, nick: string) => {
@@ -56,6 +59,7 @@ export function MultiplayerLobby({ onStartGame, onBack }: Props) {
       const m = JSON.parse(e.data)
       switch (m.type) {
         case 'WELCOME':
+          playerIdRef.current = m.playerId
           setPlayerId(m.playerId)
           setPlayers(m.players)
           setLobbyCode(c)
@@ -68,7 +72,10 @@ export function MultiplayerLobby({ onStartGame, onBack }: Props) {
           setPlayers(prev => prev.filter((p: LobbyPlayer) => p.id !== m.playerId))
           break
         case 'GAME_STARTING':
-          onStartGame(m.players)
+          onSetup(ws, playerIdRef.current, m.players)
+          break
+        case 'LOBBY_CLEARED':
+          reset()
           break
         case 'ERROR':
           setError(m.message)
@@ -85,7 +92,7 @@ export function MultiplayerLobby({ onStartGame, onBack }: Props) {
     ws.onerror = () => {
       setError('Connection failed')
     }
-  }, [onStartGame])
+  }, [onSetup])
 
   const handleCreate = async () => {
     setError('')
@@ -194,10 +201,27 @@ export function MultiplayerLobby({ onStartGame, onBack }: Props) {
           <div className="lobby-players glass">
             <div className="lobby-players-header">
               <span>Players ({players.length})</span>
-              {isHost && players.length >= 2 && (
-                <button className="btn btn-primary btn-sm" onClick={handleStart}>
-                  Start Game
-                </button>
+              {isHost && (
+                <>
+                  {players.length >= 2 && (
+                    <button className="btn btn-primary btn-sm" onClick={handleStart}>
+                      Start Game
+                    </button>
+                  )}
+                  <button className="btn btn-danger btn-sm" onClick={async () => {
+                    wsRef.current?.send(JSON.stringify({ type: 'CLEAR_LOBBY' }))
+                    try {
+                      await fetch(`https://${WORKER_HOST}/api/reset`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code: lobbyCode }),
+                      })
+                    } catch {}
+                    reset()
+                  }}>
+                    Reset Lobby
+                  </button>
+                </>
               )}
             </div>
             <div className="lobby-players-list">

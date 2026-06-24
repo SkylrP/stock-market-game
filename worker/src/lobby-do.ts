@@ -4,6 +4,7 @@ import type { LobbyPlayer, LobbyClientMessage, LobbyServerMessage, Env } from ".
 export class LobbyDO extends DurableObject {
   private players: LobbyPlayer[] = []
   private connections: Map<WebSocket, number> = new Map()
+  private resetting = false
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env)
@@ -13,8 +14,39 @@ export class LobbyDO extends DurableObject {
     })
   }
 
+  private async fullReset() {
+    if (this.resetting) return
+    this.resetting = true
+
+    // 1. Capture and detach all current sockets so webSocketClose sees nothing
+    const sockets = Array.from(this.connections.keys())
+    this.connections = new Map()
+    this.players = []
+
+    // 2. Close every WebSocket (triggers webSocketClose, but map is empty)
+    for (const ws of sockets) {
+      try { ws.close(1000, "Lobby reset") } catch { }
+    }
+
+    // 3. Nuke all durable storage
+    await this.ctx.storage.deleteAll()
+
+    this.resetting = false
+  }
+
   async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url)
+    if (url.pathname === "/reset") {
+      await this.fullReset()
+      return new Response("OK")
+    }
+
     if (request.headers.get("Upgrade")?.toLowerCase() === "websocket") {
+      // Auto-clear stale lobby: players on record but no active connections
+      if (this.players.length > 0 && this.connections.size === 0) {
+        await this.fullReset()
+      }
+
       const pair = new WebSocketPair()
       const server = pair[1]
       this.ctx.acceptWebSocket(server)
@@ -27,30 +59,55 @@ export class LobbyDO extends DurableObject {
     })
   }
 
-  webSocketMessage(ws: WebSocket, raw: string | ArrayBuffer) {
+  async webSocketMessage(ws: WebSocket, raw: string | ArrayBuffer) {
     const text = typeof raw === "string" ? raw : new TextDecoder().decode(raw)
     let msg: LobbyClientMessage
     try { msg = JSON.parse(text) } catch { return }
 
     if (msg.type === "JOIN") this.handleJoin(ws, msg.nickname)
     if (msg.type === "START_GAME") this.handleStartGame(ws)
+    if (msg.type === "GAME_STATE") this.broadcastExcept(ws, { type: "GAME_STATE", state: msg.state })
+    if (msg.type === "SETUP_LUCKY_NUMBER") {
+      this.broadcastExcept(ws, { type: "SETUP_LUCKY_NUMBER", playerId: msg.playerId, luckyNumber: msg.luckyNumber })
+    }
+    if (msg.type === "SETUP_WIN_AMOUNT") this.broadcastExcept(ws, { type: "SETUP_WIN_AMOUNT", amount: msg.amount })
+    if (msg.type === "CLEAR_LOBBY") {
+      this.broadcast({ type: "LOBBY_CLEARED" })
+      await this.fullReset()
+    }
   }
 
-  webSocketClose(ws: WebSocket) {
+  async webSocketClose(ws: WebSocket) {
+    if (this.resetting) return
+
     const pid = this.connections.get(ws)
     if (pid) {
       this.players = this.players.filter(p => p.id !== pid)
       this.broadcast({ type: "LEFT", playerId: pid })
-      this.persist()
+      await this.persist()
     }
     this.connections.delete(ws)
+
+    // Last connection gone — wipe the lobby completely
+    if (this.connections.size === 0) {
+      this.players = []
+      await this.ctx.storage.deleteAll()
+    }
   }
 
   webSocketError(ws: WebSocket, error: unknown) {
     console.error("Lobby WS error:", error)
   }
 
-  private handleJoin(ws: WebSocket, nickname: string) {
+  private async handleJoin(ws: WebSocket, nickname: string) {
+    // Detect stale lobby: players in DB but no active connections from prior session
+    if (this.players.length > 0) {
+      const activeConnections = Array.from(this.connections.values()).filter(pid => pid > 0).length
+      if (activeConnections === 0) {
+        await this.fullReset()
+      }
+    }
+
     if (this.players.length >= 8) {
       this.sendTo(ws, { type: "ERROR", code: "FULL", message: "Lobby is full" })
       return
@@ -95,7 +152,7 @@ export class LobbyDO extends DurableObject {
     try { ws.send(JSON.stringify(msg)) } catch { }
   }
 
-  private persist() {
-    this.ctx.storage.put("players", this.players)
+  private persist(): Promise<void> {
+    return this.ctx.storage.put("players", this.players) as Promise<void>
   }
 }

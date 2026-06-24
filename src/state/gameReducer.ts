@@ -611,6 +611,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return createInitialState();
     }
 
+    case 'LOAD_STATE': {
+      return action.payload as GameState;
+    }
+
     default:
       return state;
   }

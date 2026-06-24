@@ -3,13 +3,14 @@ import { StockTicker } from '../../types';
 import { calculatePnl, getOwnedTickers } from '../../game/player';
 import './StockPortfolio.css';
 
-export function StockPortfolio() {
+export function StockPortfolio({ canInteract, myPlayerIndex }: { canInteract?: boolean; myPlayerIndex?: number } = {}) {
   const { state, dispatch } = useGame();
-  const player = state.players[state.currentPlayerIndex];
+  const playerIdx = myPlayerIndex ?? state.currentPlayerIndex;
+  const player = state.players[playerIdx];
 
   if (!player) return null;
 
-  const canTrade = state.gamePhase === 'PLAYING_MARKET' && !player.hasRolled;
+  const canTrade = canInteract && state.gamePhase === 'PLAYING_MARKET' && !player.hasRolled;
 
   const ownedStocks = getOwnedTickers(player.portfolio);
 

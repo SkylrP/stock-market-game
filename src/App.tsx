@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useGame } from './state/GameContext';
 import { SetupScreen } from './components/SetupScreen/SetupScreen';
 import { Board } from './components/Board/Board';
@@ -19,6 +19,7 @@ import { HelpModal } from './components/HelpModal/HelpModal';
 import { LeaderboardModal } from './components/LeaderboardModal/LeaderboardModal';
 import { MenuScreen } from './components/MenuScreen/MenuScreen';
 import { MultiplayerLobby } from './components/MultiplayerLobby/MultiplayerLobby';
+import { MultiplayerSetupScreen } from './components/MultiplayerSetupScreen/MultiplayerSetupScreen';
 import './App.css';
 
 interface LobbyPlayer {
@@ -26,7 +27,15 @@ interface LobbyPlayer {
   nickname: string
 }
 
-function GameScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
+function GameScreenContent({
+  onBackToMenu,
+  canInteract,
+  myPlayerIndex,
+}: {
+  onBackToMenu: () => void
+  canInteract: boolean
+  myPlayerIndex?: number
+}) {
   const { state, dispatch } = useGame();
   const [confirmingNewGame, setConfirmingNewGame] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -40,32 +49,50 @@ function GameScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
     }
   }, [showLeaderboard, state]);
 
-  const player = state.players[state.currentPlayerIndex];
-  const isGoingToWork = !player.inMarket;
+  const displayIdx = myPlayerIndex ?? state.currentPlayerIndex;
+  const displayPlayer = state.players[displayIdx];
+  const activePlayer = state.players[state.currentPlayerIndex];
+
+  const isGoingToWork = !activePlayer?.inMarket;
 
   const handleEndTurn = () => {
+    if (!canInteract) return;
     dispatch({ type: 'END_TURN' });
   };
 
   const handleSellBeforeRoll = () => {
+    if (!canInteract) return;
     dispatch({ type: 'OPEN_SELL_MODAL' });
   };
 
-  const canEndTurn = player.hasRolled
+  const canEndTurn = activePlayer?.hasRolled
     && !state.animationState.diceRolling
     && !state.animationState.slotSpinning
     && !state.pendingAction;
 
-  const hasShares = Object.values(player.portfolio).some(v => v > 0);
-  const canSellBeforeRoll = player.canSellBeforeRoll
-    && !player.hasRolled
+  const hasShares = activePlayer && Object.values(activePlayer.portfolio).some(v => v > 0);
+  const canSellBeforeRoll = activePlayer?.canSellBeforeRoll
+    && !activePlayer.hasRolled
     && hasShares
-    && player.inMarket
+    && activePlayer.inMarket
     && !state.pendingAction
     && !state.animationState.diceRolling;
 
+  const waitingPlayer = !canInteract && activePlayer
+    ? state.players[state.currentPlayerIndex]
+    : null;
+
   return (
     <div className="game-screen">
+      {waitingPlayer && (
+        <div className="waiting-overlay">
+          <div className="waiting-message glass">
+            <span className="waiting-spinner" />
+            <span>Waiting for {waitingPlayer.name}'s turn...</span>
+          </div>
+        </div>
+      )}
+
       <div className="top-bar">
         <QbiIndicator />
       </div>
@@ -78,21 +105,21 @@ function GameScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
         {isGoingToWork && (
           <div className="work-notice">
             <span className="work-icon">💼</span>
-            <span>Roll your lucky number ({player.luckyNumber}) to earn $400!</span>
+            <span>Roll your lucky number ({activePlayer?.luckyNumber}) to earn $400!</span>
           </div>
         )}
-        {canSellBeforeRoll && (
+        {canSellBeforeRoll && canInteract && (
           <button className="btn btn-danger btn-sm sell-before-btn" onClick={handleSellBeforeRoll}>
             Sell Shares Before Rolling
           </button>
         )}
-        <DiceRoller />
-        <StockPortfolio />
+        <DiceRoller disabled={!canInteract} />
+        <StockPortfolio myPlayerIndex={displayIdx} canInteract={canInteract} />
       </div>
 
       <div className="bottom-bar">
-        <PlayerPanel onOpenLeaderboard={() => setShowLeaderboard(true)} />
-        {canEndTurn && (
+        <PlayerPanel onOpenLeaderboard={() => setShowLeaderboard(true)} myPlayerIndex={displayIdx} />
+        {canEndTurn && canInteract && (
           <div className="end-turn-area">
             <button className="btn btn-primary btn-block" onClick={handleEndTurn}>
               End Turn
@@ -130,13 +157,13 @@ function GameScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
         )}
       </div>
 
-      {state.pendingAction?.type === 'SELL_BEFORE_ROLL' && <SellBeforeRollModal />}
-      {state.pendingAction?.type === 'BUY_SELL' && <BuySellModal />}
-      {state.pendingAction?.type === 'STOCK_HOLDER_MEETING' && <StockMeetingModal />}
+      {state.pendingAction?.type === 'SELL_BEFORE_ROLL' && canInteract && <SellBeforeRollModal />}
+      {state.pendingAction?.type === 'BUY_SELL' && canInteract && <BuySellModal />}
+      {state.pendingAction?.type === 'STOCK_HOLDER_MEETING' && canInteract && <StockMeetingModal />}
       {(state.pendingAction?.type === 'PAY_FEE' ||
         state.pendingAction?.type === 'BROKER_FEE' ||
-        state.pendingAction?.type === 'SELL_FOR_FEE') && <FeeModal />}
-      {state.pendingAction?.type === 'MARKET_MANIPULATOR' && <MarketManipulatorModal />}
+        state.pendingAction?.type === 'SELL_FOR_FEE') && canInteract && <FeeModal />}
+      {state.pendingAction?.type === 'MARKET_MANIPULATOR' && canInteract && <MarketManipulatorModal />}
       {state.gamePhase === 'GAME_OVER' && <WinnerModal />}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
       {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
@@ -145,36 +172,132 @@ function GameScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
   );
 }
 
+function LocalGameScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
+  return <GameScreenContent onBackToMenu={onBackToMenu} canInteract={true} />;
+}
+
+function MultiplayerGameScreen({
+  onBackToMenu,
+  ws,
+  playerId,
+}: {
+  onBackToMenu: () => void
+  ws: WebSocket | null
+  playerId: number
+}) {
+  const { state, dispatch } = useGame();
+  const myPlayerIndex = playerId - 1;
+  const canInteract = state.currentPlayerIndex === myPlayerIndex;
+  const prevSerialized = useRef('');
+  const [disconnected, setDisconnected] = useState(false);
+
+  useEffect(() => {
+    if (!ws) return;
+    ws.onmessage = null;
+    ws.onclose = () => setDisconnected(true);
+    ws.onerror = () => setDisconnected(true);
+    return () => {
+      ws.onclose = null;
+      ws.onerror = null;
+    };
+  }, [ws]);
+
+  useEffect(() => {
+    if (!ws || disconnected) return;
+    if (state.animationState.diceRolling || state.animationState.slotSpinning) return;
+    const serialized = JSON.stringify(state);
+    if (serialized === prevSerialized.current) return;
+    prevSerialized.current = serialized;
+    ws.send(JSON.stringify({ type: 'GAME_STATE', state }));
+  }, [state, ws, disconnected]);
+
+  useEffect(() => {
+    if (!ws) return;
+    const handler = (e: MessageEvent) => {
+      const m = JSON.parse(e.data);
+      if (m.type === 'GAME_STATE') {
+        prevSerialized.current = JSON.stringify(m.state);
+        dispatch({ type: 'LOAD_STATE', payload: m.state });
+      }
+      if (m.type === 'LEFT') {
+        setDisconnected(true);
+      }
+    };
+    ws.addEventListener('message', handler);
+    return () => ws.removeEventListener('message', handler);
+  }, [ws, dispatch]);
+
+  if (disconnected) {
+    return (
+      <div className="game-screen">
+        <div className="waiting-overlay">
+          <div className="waiting-message glass">
+            <span className="waiting-spinner" />
+            <span>Another player disconnected</span>
+            <button className="btn btn-primary" style={{ marginTop: 12 }} onClick={onBackToMenu}>
+              Back to Menu
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <GameScreenContent
+      onBackToMenu={onBackToMenu}
+      canInteract={canInteract}
+      myPlayerIndex={myPlayerIndex}
+    />
+  );
+}
+
 function App() {
   const { state, dispatch } = useGame();
-  const [screen, setScreen] = useState<'menu' | 'setup' | 'lobby' | 'game'>('menu');
+  const [screen, setScreen] = useState<'menu' | 'setup' | 'lobby' | 'multiplayer-setup' | 'game'>('menu');
   const [lobbyPlayers, setLobbyPlayers] = useState<LobbyPlayer[]>([]);
+  const [lobbyPlayerId, setLobbyPlayerId] = useState(0);
+  const wsRef = useRef<WebSocket | null>(null);
 
   const handleLocalGame = () => {
     setScreen('setup');
   };
 
   const handleBackToMenu = () => {
+    wsRef.current?.close();
+    wsRef.current = null;
     dispatch({ type: 'NEW_GAME' });
     setScreen('menu');
   };
 
-  const handleMultiplayerStart = (players: LobbyPlayer[]) => {
+  const handleMultiplayerSetup = useCallback((ws: WebSocket, playerId: number, players: LobbyPlayer[]) => {
+    wsRef.current = ws;
+    setLobbyPlayerId(playerId);
     setLobbyPlayers(players);
-    for (const p of players) {
-      dispatch({ type: 'ADD_PLAYER', payload: { name: p.nickname, luckyNumber: ((p.id - 1) % 6) + 1 } });
-    }
-    dispatch({ type: 'SET_WIN_AMOUNT', payload: 100000 });
-    dispatch({ type: 'START_GAME' });
+    setScreen('multiplayer-setup');
+  }, []);
+
+  const handleBeginGame = useCallback(() => {
     setScreen('game');
-  };
+  }, []);
 
   if (screen === 'menu') {
     return <MenuScreen onLocalGame={handleLocalGame} onMultiplayer={() => setScreen('lobby')} />;
   }
 
   if (screen === 'lobby') {
-    return <MultiplayerLobby onStartGame={handleMultiplayerStart} onBack={() => setScreen('menu')} />;
+    return <MultiplayerLobby onSetup={handleMultiplayerSetup} onBack={() => setScreen('menu')} />;
+  }
+
+  if (screen === 'multiplayer-setup') {
+    return (
+      <MultiplayerSetupScreen
+        ws={wsRef.current!}
+        playerId={lobbyPlayerId}
+        players={lobbyPlayers}
+        onBeginGame={handleBeginGame}
+      />
+    );
   }
 
   if (screen === 'setup') {
@@ -182,13 +305,23 @@ function App() {
       <>
         {state.gamePhase === 'SETUP' && <SetupScreen onBack={handleBackToMenu} />}
         {state.gamePhase !== 'SETUP' && (
-          <GameScreen onBackToMenu={handleBackToMenu} />
+          <LocalGameScreen onBackToMenu={handleBackToMenu} />
         )}
       </>
     );
   }
 
-  return <GameScreen onBackToMenu={handleBackToMenu} />;
+  if (wsRef.current) {
+    return (
+      <MultiplayerGameScreen
+        onBackToMenu={handleBackToMenu}
+        ws={wsRef.current}
+        playerId={lobbyPlayerId}
+      />
+    );
+  }
+
+  return <LocalGameScreen onBackToMenu={handleBackToMenu} />;
 }
 
 export default App;

@@ -3,7 +3,7 @@ import { useGame } from '../../state/GameContext';
 import { DICE_DOTS, DICE_REROLL_INTERVAL, DICE_ROLL_DURATION } from '../../game/dice';
 import './DiceRoller.css';
 
-export function DiceRoller() {
+export function DiceRoller({ disabled }: { disabled?: boolean } = {}) {
   const { state, dispatch } = useGame();
   const { animationState, diceValue } = state;
   const [phase, setPhase] = useState<'idle' | 'rolling' | 'done'>('idle');
@@ -30,7 +30,7 @@ export function DiceRoller() {
   }, [animationState.diceRolling, dispatch]);
 
   useEffect(() => {
-    if (diceValue && phase === 'done') {
+    if (diceValue && (phase === 'done' || phase === 'idle')) {
       setDisplayValue(diceValue);
     }
   }, [diceValue, phase]);
@@ -45,6 +45,7 @@ export function DiceRoller() {
 
   const handleRoll = () => {
     if (phase !== 'idle') return;
+    if (disabled) return;
     dispatch({ type: 'ROLL_DICE' });
   };
 
@@ -54,9 +55,9 @@ export function DiceRoller() {
   return (
     <div className="dice-roller">
       <button
-        className={`dice-btn ${isRolling ? 'rolling' : ''}`}
+        className={`dice-btn ${isRolling ? 'rolling' : ''} ${disabled ? 'disabled' : ''}`}
         onClick={handleRoll}
-        disabled={isRolling}
+        disabled={isRolling || disabled}
       >
           <div className={`dice ${isRolling ? 'shake' : ''}`}>
             {shownValue ? (
