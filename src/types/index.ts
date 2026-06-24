@@ -55,6 +55,7 @@ export interface GameState {
   winAmount: number;
   diceValue: number | null;
   pendingAction: PendingAction | null;
+  landingPendingAction: PendingAction | null;
   animationState: AnimationState;
 }
 
@@ -78,6 +79,9 @@ export interface AnimationState {
   pieceMoving: boolean;
   pieceFrom: number;
   pieceTo: number;
+  qbiChanging: boolean;
+  qbiFrom: number;
+  qbiTo: number;
   slotSpinning: boolean;
   slotReels: SlotReel[];
   slotResult: SlotResult | null;

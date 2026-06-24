@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useGame } from '../../state/GameContext';
 import { SquareType } from '../../types';
 import './Board.css';
@@ -23,24 +23,63 @@ const SQUARE_LABELS: Record<SquareType, string> = {
   MARKET_MANIPULATOR: '⚡',
 };
 
+const HOP_DURATION = 1000;
+
 export function Board() {
-  const { state } = useGame();
+  const { state, dispatch } = useGame();
   const containerRef = useRef<HTMLDivElement>(null);
   const SQUARE_STEP = 56;
+  const [hopIdx, setHopIdx] = useState<number | null>(null);
+  const [bounceKey, setBounceKey] = useState(0);
+  const { animationState } = state;
 
   useEffect(() => {
+    if (!animationState.pieceMoving) {
+      setHopIdx(null);
+      return;
+    }
+    const totalHops = animationState.pieceTo - animationState.pieceFrom;
+    const hopInterval = HOP_DURATION / totalHops;
+    let step = 0;
+
+    setHopIdx(animationState.pieceFrom);
+    setBounceKey(k => k + 1);
+
+    const advance = () => {
+      step++;
+      setHopIdx(animationState.pieceFrom + step);
+      setBounceKey(k => k + 1);
+      if (step < totalHops) {
+        setTimeout(advance, hopInterval);
+      } else {
+        setTimeout(() => dispatch({ type: 'FINISH_LANDING_ANIMATION' }), hopInterval * 0.3);
+      }
+    };
+
+    const timer = setTimeout(advance, hopInterval);
+    return () => clearTimeout(timer);
+  }, [animationState.pieceMoving, animationState.pieceFrom, animationState.pieceTo, dispatch]);
+
+  useEffect(() => {
+    if (animationState.pieceMoving) return;
     const player = state.players[state.currentPlayerIndex];
     if (!player || !containerRef.current) return;
     const scrollTo = 12 + player.position * SQUARE_STEP;
     containerRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
-  }, [state.currentPlayerIndex, state.players]);
+  }, [animationState.pieceMoving, state.currentPlayerIndex, state.players]);
+
+  const currentPlayerId = state.players[state.currentPlayerIndex]?.id;
+  const currentPlayerColor = state.players[state.currentPlayerIndex]?.color;
 
   return (
     <div className="board-container" ref={containerRef}>
       <div className="board-strip">
         {state.board.map((square, idx) => {
-          const playerOnSquare = state.players.filter(p => p.position === idx);
-          const isCurrent = idx === state.players[state.currentPlayerIndex]?.position;
+          const isAnimatingHere = animationState.pieceMoving && hopIdx === idx;
+          const playerOnSquare = state.players.filter(p =>
+            p.position === idx && !(animationState.pieceMoving && p.id === currentPlayerId)
+          );
+          const isCurrent = idx === state.players[state.currentPlayerIndex]?.position && !animationState.pieceMoving;
           return (
             <div
               key={idx}
@@ -65,6 +104,11 @@ export function Board() {
                       style={{ backgroundColor: p.color }}
                     />
                   ))}
+                </div>
+              )}
+              {isAnimatingHere && (
+                <div className="square-players">
+                  <div key={bounceKey} className="player-piece bouncing" style={{ backgroundColor: currentPlayerColor }} />
                 </div>
               )}
             </div>

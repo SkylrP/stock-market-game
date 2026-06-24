@@ -68,6 +68,9 @@ function GameScreenContent({
   const canEndTurn = activePlayer?.hasRolled
     && !state.animationState.diceRolling
     && !state.animationState.slotSpinning
+    && !state.animationState.pieceMoving
+    && !state.animationState.qbiChanging
+    && !state.landingPendingAction
     && !state.pendingAction;
 
   const hasShares = activePlayer && Object.values(activePlayer.portfolio).some(v => v > 0);
@@ -81,6 +84,19 @@ function GameScreenContent({
   const waitingPlayer = !canInteract && activePlayer
     ? state.players[state.currentPlayerIndex]
     : null;
+
+  const prevPieceMoving = useRef(state.animationState.pieceMoving);
+  useEffect(() => {
+    const wasMoving = prevPieceMoving.current;
+    const nowMoving = state.animationState.pieceMoving;
+    prevPieceMoving.current = nowMoving;
+    if (wasMoving && !nowMoving && state.landingPendingAction) {
+      const timer = setTimeout(() => {
+        dispatch({ type: 'REVEAL_PENDING_ACTION' });
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [state.animationState.pieceMoving, state.landingPendingAction, dispatch]);
 
   return (
     <div className="game-screen">

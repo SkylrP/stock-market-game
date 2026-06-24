@@ -4,6 +4,7 @@ import {
   Player,
   StockTicker,
   SlotSymbol,
+  PendingAction,
   STOCKS_DATA,
   PLAYER_COLORS,
   SLOT_SYMBOLS,
@@ -35,11 +36,15 @@ export function createInitialState(): GameState {
     winAmount: 100000,
     diceValue: null,
     pendingAction: null,
+    landingPendingAction: null,
     animationState: {
       diceRolling: false,
       pieceMoving: false,
       pieceFrom: 0,
       pieceTo: 0,
+      qbiChanging: false,
+      qbiFrom: 0,
+      qbiTo: 0,
       slotSpinning: false,
       slotReels: [],
       slotResult: null,
@@ -182,6 +187,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             pieceMoving: false,
             pieceFrom: 0,
             pieceTo: 0,
+            qbiChanging: false,
+            qbiFrom: 0,
+            qbiTo: 0,
             slotSpinning: false,
             slotReels: [],
             slotResult: null,
@@ -209,7 +217,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'FINISH_DICE_ROLL': {
       const player = getCurrentPlayer(state);
 
-      // Pay salary to any player whose luckyNumber matches the roll
       const dice = state.diceValue
       if (dice) {
         const luckyPlayers = state.players.filter(p => p.luckyNumber === dice)
@@ -235,7 +242,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         };
       }
 
-      let newPos = (player.position + (state.diceValue || 0)) % state.board.length;
+      const oldPos = player.position;
+      let newPos = (oldPos + (state.diceValue || 0)) % state.board.length;
       if (newPos === 0) newPos = 1;
       const square = state.board[newPos];
 
@@ -249,20 +257,36 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         animationState: {
           ...newState.animationState,
           diceRolling: false,
+          pieceMoving: true,
+          pieceFrom: oldPos,
+          pieceTo: newPos,
+          qbiChanging: false,
+          qbiFrom: 0,
+          qbiTo: 0,
         },
       };
 
+      let landingPending: PendingAction | null = null;
+
       if (square.type === 'STOCK_POSITIVE' || square.type === 'STOCK_NEGATIVE') {
-        const ticker = square.stock!;
         const oldQbi = newState.qbi;
         const newQbi = moveQbi(oldQbi, square.qbiChange || 0);
         const qbiHistory = [oldQbi, ...newState.qbiHistory].slice(0, 10);
-        newState = { ...newState, qbi: newQbi, qbiHistory };
-        newState = { ...newState, stockPrices: calculateAllPrices(newQbi) };
+        newState = { ...newState, qbi: newQbi, qbiHistory, stockPrices: calculateAllPrices(newQbi) };
 
-        const stock = newState.stocks[ticker];
-        const divPerShare = calculateDividend(newState.stockPrices[ticker], stock.dividendPercent);
-        const ownedShares = player.portfolio[ticker];
+        newState = {
+          ...newState,
+          animationState: {
+            ...newState.animationState,
+            qbiChanging: true,
+            qbiFrom: oldQbi,
+            qbiTo: newQbi,
+          },
+        };
+
+        const stock = newState.stocks[square.stock!];
+        const divPerShare = calculateDividend(newState.stockPrices[square.stock!], stock.dividendPercent);
+        const ownedShares = player.portfolio[square.stock!];
         let dividendAmount = 0;
 
         if (ownedShares > 0) {
@@ -272,48 +296,51 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           });
         }
 
-        newState = {
-          ...newState,
-          pendingAction: {
-            type: 'BUY_SELL',
-            stock: ticker,
-            price: newState.stockPrices[ticker],
-            buyOnly: true,
-            dividend: dividendAmount > 0 ? dividendAmount : undefined,
-          },
+        landingPending = {
+          type: 'BUY_SELL',
+          stock: square.stock!,
+          price: newState.stockPrices[square.stock!],
+          buyOnly: true,
+          dividend: dividendAmount > 0 ? dividendAmount : undefined,
         };
       }
 
       if (square.type === 'STOCK_HOLDER_MEETING') {
-        const ticker = square.stock!;
-        newState = {
-          ...newState,
-          pendingAction: { type: 'STOCK_HOLDER_MEETING', stock: ticker },
-        };
+        landingPending = { type: 'STOCK_HOLDER_MEETING', stock: square.stock! };
       }
 
       if (square.type === 'FEE_100') {
-        newState = {
-          ...newState,
-          pendingAction: { type: 'PAY_FEE', amount: 100, reason: '$100 Fee' },
-        };
+        landingPending = { type: 'PAY_FEE', amount: 100, reason: '$100 Fee' };
       }
 
       if (square.type === 'BROKER_FEE') {
-        newState = {
-          ...newState,
-          pendingAction: { type: 'BROKER_FEE' },
-        };
+        landingPending = { type: 'BROKER_FEE' };
       }
 
       if (square.type === 'MARKET_MANIPULATOR') {
-        newState = {
-          ...newState,
-          pendingAction: { type: 'MARKET_MANIPULATOR' },
-        };
+        landingPending = { type: 'MARKET_MANIPULATOR' };
       }
 
-      return withWinCheck(newState);
+      return withWinCheck({ ...newState, landingPendingAction: landingPending });
+    }
+
+    case 'FINISH_LANDING_ANIMATION': {
+      return {
+        ...state,
+        animationState: {
+          ...state.animationState,
+          pieceMoving: false,
+          qbiChanging: false,
+        },
+      };
+    }
+
+    case 'REVEAL_PENDING_ACTION': {
+      return {
+        ...state,
+        pendingAction: state.landingPendingAction,
+        landingPendingAction: null,
+      };
     }
 
     case 'BUY_STOCK': {

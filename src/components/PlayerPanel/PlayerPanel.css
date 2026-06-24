@@ -3,6 +3,26 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  perspective: 600px;
+  transform-style: preserve-3d;
+}
+
+.player-panel.panel-exit {
+  animation: panelExit 250ms ease-in forwards;
+}
+
+.player-panel.panel-enter {
+  animation: panelEnter 300ms ease-out forwards;
+}
+
+@keyframes panelExit {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(30px) scale(0.85); opacity: 0; }
+}
+
+@keyframes panelEnter {
+  0% { transform: translateY(-30px) scale(0.85); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
 .player-info {
@@ -111,6 +131,14 @@
 .stat-value.highlight {
   color: var(--accent-cyan);
 }
+
+.stat-delta {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.stat-delta.delta-up { color: var(--accent-green); }
+.stat-delta.delta-down { color: var(--accent-red); }
 
 .win-progress {
   display: flex;

@@ -32,3 +32,11 @@
   border-radius: 4px;
   overflow: visible;
 }
+
+.qbi-delta {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.qbi-delta.delta-up { color: var(--accent-green); }
+.qbi-delta.delta-down { color: var(--accent-red); }
