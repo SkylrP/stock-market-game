@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import './MultiplayerLobby.css'
 
-const WORKER_HOST = 'localhost:8787'
+const WORKER_HOST = 'stock-market-game.spagniello.workers.dev'
 
 interface LobbyPlayer {
   id: number
@@ -91,7 +91,7 @@ export function MultiplayerLobby({ onStartGame, onBack }: Props) {
     setError('')
     if (!nickname.trim()) { setError('Enter a nickname'); return }
     try {
-      const res = await fetch(`http://${WORKER_HOST}/api/create`, { method: 'POST' })
+      const res = await fetch(`https://${WORKER_HOST}/api/create`, { method: 'POST' })
       const data = await res.json()
       connectWebSocket(data.code, nickname.trim())
     } catch {
@@ -105,7 +105,7 @@ export function MultiplayerLobby({ onStartGame, onBack }: Props) {
     if (!nickname.trim()) { setError('Enter a nickname'); return }
 
     try {
-      const res = await fetch(`http://${WORKER_HOST}/api/join`, {
+      const res = await fetch(`https://${WORKER_HOST}/api/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: joinCode.trim() }),
