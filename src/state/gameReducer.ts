@@ -195,22 +195,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (state.animationState.diceRolling) return state;
 
       const dice = rollDice();
-      let newState = state;
-
-      const luckyPlayers = newState.players.filter(p => p.luckyNumber === dice);
-      for (const lp of luckyPlayers) {
-        const salary = getSalary(lp.inMarket);
-        newState = updatePlayer(newState, lp.id, {
-          cash: Math.round((lp.cash + salary) * 100) / 100,
-          totalEarned: lp.inMarket ? lp.totalEarned : Math.round((lp.totalEarned + salary) * 100) / 100,
-        });
-      }
 
       return {
-        ...newState,
+        ...state,
         diceValue: dice,
         animationState: {
-          ...newState.animationState,
+          ...state.animationState,
           diceRolling: true,
         },
       };
@@ -218,6 +208,19 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'FINISH_DICE_ROLL': {
       const player = getCurrentPlayer(state);
+
+      // Pay salary to any player whose luckyNumber matches the roll
+      const dice = state.diceValue
+      if (dice) {
+        const luckyPlayers = state.players.filter(p => p.luckyNumber === dice)
+        for (const lp of luckyPlayers) {
+          const salary = getSalary(lp.inMarket)
+          state = updatePlayer(state, lp.id, {
+            cash: Math.round((lp.cash + salary) * 100) / 100,
+            totalEarned: lp.inMarket ? lp.totalEarned : Math.round((lp.totalEarned + salary) * 100) / 100,
+          })
+        }
+      }
 
       if (!player.inMarket) {
         return {

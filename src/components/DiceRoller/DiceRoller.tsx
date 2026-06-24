@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useGame } from '../../state/GameContext';
 import { DICE_DOTS, DICE_ROLL_DURATION } from '../../game/dice';
 import './DiceRoller.css';
@@ -7,19 +7,19 @@ export function DiceRoller({ disabled }: { disabled?: boolean } = {}) {
   const { state, dispatch } = useGame();
   const { animationState, diceValue } = state;
   const [phase, setPhase] = useState<'idle' | 'rolling' | 'done'>('idle');
-  const [displayValue, setDisplayValue] = useState<number | null>(null);
-  const [randomValue, setRandomValue] = useState<number | null>(null);
+  const randomRef = useRef<number | null>(null);
+  const [tickCount, setTickCount] = useState(0);
 
   useEffect(() => {
     if (animationState.diceRolling) {
       setPhase('rolling');
-      setDisplayValue(null);
       const start = Date.now();
       const tick = () => {
         const elapsed = Date.now() - start;
         const progress = elapsed / DICE_ROLL_DURATION;
         const interval = 50 + progress * 170;
-        setRandomValue(Math.floor(Math.random() * 6) + 1);
+        randomRef.current = Math.floor(Math.random() * 6) + 1;
+        setTickCount(c => c + 1);
         if (elapsed < DICE_ROLL_DURATION) {
           setTimeout(tick, interval);
         } else {
@@ -32,16 +32,10 @@ export function DiceRoller({ disabled }: { disabled?: boolean } = {}) {
   }, [animationState.diceRolling, dispatch]);
 
   useEffect(() => {
-    if (diceValue && (phase === 'done' || phase === 'idle')) {
-      setDisplayValue(diceValue);
-    }
-  }, [diceValue, phase]);
-
-  useEffect(() => {
     if (!diceValue) {
       setPhase('idle');
-      setDisplayValue(null);
-      setRandomValue(null);
+      randomRef.current = null;
+      setTickCount(0);
     }
   }, [diceValue]);
 
@@ -52,7 +46,7 @@ export function DiceRoller({ disabled }: { disabled?: boolean } = {}) {
   };
 
   const isRolling = phase === 'rolling';
-  const shownValue = displayValue || randomValue;
+  const shownValue = phase === 'done' ? diceValue : (phase === 'rolling' ? randomRef.current : null);
 
   return (
     <div className="dice-roller">
