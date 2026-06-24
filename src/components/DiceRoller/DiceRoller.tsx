@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useGame } from '../../state/GameContext';
-import { DICE_DOTS, DICE_REROLL_INTERVAL, DICE_ROLL_DURATION } from '../../game/dice';
+import { DICE_DOTS, DICE_ROLL_DURATION } from '../../game/dice';
 import './DiceRoller.css';
 
 export function DiceRoller({ disabled }: { disabled?: boolean } = {}) {
@@ -14,18 +14,20 @@ export function DiceRoller({ disabled }: { disabled?: boolean } = {}) {
     if (animationState.diceRolling) {
       setPhase('rolling');
       setDisplayValue(null);
-      const interval = setInterval(() => {
+      const start = Date.now();
+      const tick = () => {
+        const elapsed = Date.now() - start;
+        const progress = elapsed / DICE_ROLL_DURATION;
+        const interval = 50 + progress * 170;
         setRandomValue(Math.floor(Math.random() * 6) + 1);
-      }, DICE_REROLL_INTERVAL);
-      const timer = setTimeout(() => {
-        clearInterval(interval);
-        setPhase('done');
-        dispatch({ type: 'FINISH_DICE_ROLL' });
-      }, DICE_ROLL_DURATION);
-      return () => {
-        clearTimeout(timer);
-        clearInterval(interval);
+        if (elapsed < DICE_ROLL_DURATION) {
+          setTimeout(tick, interval);
+        } else {
+          setPhase('done');
+          dispatch({ type: 'FINISH_DICE_ROLL' });
+        }
       };
+      tick();
     }
   }, [animationState.diceRolling, dispatch]);
 
@@ -59,7 +61,7 @@ export function DiceRoller({ disabled }: { disabled?: boolean } = {}) {
         onClick={handleRoll}
         disabled={isRolling || disabled}
       >
-          <div className={`dice ${isRolling ? 'shake' : ''}`}>
+          <div className={`dice ${isRolling ? 'rolling' : ''} ${phase === 'done' ? 'landing' : ''}`}>
             {shownValue ? (
               <div className="dice-face">
                 {DICE_DOTS[shownValue as keyof typeof DICE_DOTS]?.map((pos, i) => (

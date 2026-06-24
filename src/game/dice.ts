@@ -12,4 +12,4 @@ export const DICE_DOTS: Record<number, [number, number][]> = {
 };
 
 export const DICE_REROLL_INTERVAL = 80;
-export const DICE_ROLL_DURATION = 600;
+export const DICE_ROLL_DURATION = 1200;
