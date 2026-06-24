@@ -54,6 +54,14 @@ export class LobbyDO extends DurableObject {
       return new Response(null, { status: 101, webSocket: pair[0] })
     }
 
+    // Reject join requests for lobbies with no players and no connections
+    if (this.players.length === 0 && this.getActive().length === 0) {
+      return new Response(JSON.stringify({ error: "Lobby not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      })
+    }
+
     return new Response(JSON.stringify({ players: this.players }), {
       headers: { "Content-Type": "application/json" },
     })
@@ -106,8 +114,20 @@ export class LobbyDO extends DurableObject {
   }
 
   private async handleJoin(ws: WebSocket, nickname: string) {
+    if (!nickname.trim()) {
+      this.sendTo(ws, { type: "ERROR", code: "INVALID_NAME", message: "Nickname cannot be empty" })
+      return
+    }
+
     if (this.players.length > 0 && this.getActive().length === 0) {
       await this.fullReset()
+    }
+
+    // Clean up stale player entries created by DO hibernation losing the in-memory connections Map
+    if (this.players.length > this.getActive().length) {
+      this.players = []
+      this.connections.clear()
+      await this.ctx.storage.put("players", this.players)
     }
 
     if (this.players.length >= 8) {
