@@ -14,21 +14,22 @@ export class LobbyDO extends DurableObject {
     })
   }
 
+  private getActive(): WebSocket[] {
+    return Array.from(this.ctx.getWebSockets())
+  }
+
   private async fullReset() {
     if (this.resetting) return
     this.resetting = true
 
-    // 1. Capture and detach all current sockets so webSocketClose sees nothing
-    const sockets = Array.from(this.connections.keys())
+    const sockets = this.getActive()
     this.connections = new Map()
     this.players = []
 
-    // 2. Close every WebSocket (triggers webSocketClose, but map is empty)
     for (const ws of sockets) {
       try { ws.close(1000, "Lobby reset") } catch { }
     }
 
-    // 3. Nuke all durable storage
     await this.ctx.storage.deleteAll()
 
     this.resetting = false
@@ -42,8 +43,7 @@ export class LobbyDO extends DurableObject {
     }
 
     if (request.headers.get("Upgrade")?.toLowerCase() === "websocket") {
-      // Auto-clear stale lobby: players on record but no active connections
-      if (this.players.length > 0 && this.connections.size === 0) {
+      if (this.players.length > 0 && this.getActive().length === 0) {
         await this.fullReset()
       }
 
@@ -60,6 +60,11 @@ export class LobbyDO extends DurableObject {
   }
 
   async webSocketMessage(ws: WebSocket, raw: string | ArrayBuffer) {
+    // Re-register connection if DO hibernated (in-memory connections Map was lost)
+    if (!this.connections.has(ws)) {
+      this.connections.set(ws, 0)
+    }
+
     const text = typeof raw === "string" ? raw : new TextDecoder().decode(raw)
     let msg: LobbyClientMessage
     try { msg = JSON.parse(text) } catch { return }
@@ -89,7 +94,8 @@ export class LobbyDO extends DurableObject {
     this.connections.delete(ws)
 
     // Last connection gone — wipe the lobby completely
-    if (this.connections.size === 0) {
+    // Use getActive() instead of connections.size to handle hibernation
+    if (this.getActive().length === 0) {
       this.players = []
       await this.ctx.storage.deleteAll()
     }
@@ -100,12 +106,8 @@ export class LobbyDO extends DurableObject {
   }
 
   private async handleJoin(ws: WebSocket, nickname: string) {
-    // Detect stale lobby: players in DB but no active connections from prior session
-    if (this.players.length > 0) {
-      const activeConnections = Array.from(this.connections.values()).filter(pid => pid > 0).length
-      if (activeConnections === 0) {
-        await this.fullReset()
-      }
+    if (this.players.length > 0 && this.getActive().length === 0) {
+      await this.fullReset()
     }
 
     if (this.players.length >= 8) {
@@ -134,14 +136,14 @@ export class LobbyDO extends DurableObject {
 
   private broadcast(msg: LobbyServerMessage) {
     const data = JSON.stringify(msg)
-    for (const [ws] of this.connections) {
+    for (const ws of this.getActive()) {
       try { ws.send(data) } catch { }
     }
   }
 
   private broadcastExcept(wsSkip: WebSocket, msg: LobbyServerMessage) {
     const data = JSON.stringify(msg)
-    for (const [ws] of this.connections) {
+    for (const ws of this.getActive()) {
       if (ws !== wsSkip) {
         try { ws.send(data) } catch { }
       }
