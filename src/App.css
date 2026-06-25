@@ -46,6 +46,10 @@
   font-size: 24px;
 }
 
+.action-button-area {
+  padding-bottom: 8px;
+}
+
 .bottom-bar {
   flex-shrink: 0;
   padding: 8px 12px;

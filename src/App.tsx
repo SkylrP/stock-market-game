@@ -40,7 +40,14 @@ function GameScreenContent({
   const [confirmingNewGame, setConfirmingNewGame] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showActionModal, setShowActionModal] = useState(false);
   const stateRef = useRef(state);
+
+  useEffect(() => {
+    if (!state.pendingAction) {
+      setShowActionModal(false);
+    }
+  }, [state.pendingAction]);
 
   useEffect(() => {
     if (showLeaderboard && stateRef.current !== state) {
@@ -63,6 +70,17 @@ function GameScreenContent({
   const handleSellBeforeRoll = () => {
     if (!canInteract) return;
     dispatch({ type: 'OPEN_SELL_MODAL' });
+  };
+
+  const getActionLabel = () => {
+    const a = state.pendingAction;
+    if (!a) return '';
+    switch (a.type) {
+      case 'BUY_SELL': return a.buyOnly ? `Buy ${a.stock}` : `Sell ${a.stock}`;
+      case 'STOCK_HOLDER_MEETING': return `${a.stock} Meeting`;
+      case 'MARKET_MANIPULATOR': return 'Market Manipulator';
+      default: return '';
+    }
   };
 
   const canEndTurn = activePlayer?.hasRolled
@@ -134,6 +152,13 @@ function GameScreenContent({
       </div>
 
       <div className="bottom-bar">
+        {!showActionModal && state.pendingAction && canInteract && (
+          <div className="action-button-area">
+            <button className="btn btn-success btn-block" onClick={() => setShowActionModal(true)}>
+              {getActionLabel()}
+            </button>
+          </div>
+        )}
         <PlayerPanel onOpenLeaderboard={() => setShowLeaderboard(true)} myPlayerIndex={displayIdx} />
         {canEndTurn && canInteract && (
           <div className="end-turn-area">
@@ -174,12 +199,12 @@ function GameScreenContent({
       </div>
 
       {state.pendingAction?.type === 'SELL_BEFORE_ROLL' && canInteract && <SellBeforeRollModal />}
-      {state.pendingAction?.type === 'BUY_SELL' && canInteract && <BuySellModal />}
-      {state.pendingAction?.type === 'STOCK_HOLDER_MEETING' && canInteract && <StockMeetingModal />}
+      {showActionModal && state.pendingAction?.type === 'BUY_SELL' && canInteract && <BuySellModal />}
+      {showActionModal && state.pendingAction?.type === 'STOCK_HOLDER_MEETING' && canInteract && <StockMeetingModal />}
       {(state.pendingAction?.type === 'PAY_FEE' ||
         state.pendingAction?.type === 'BROKER_FEE' ||
         state.pendingAction?.type === 'SELL_FOR_FEE') && canInteract && <FeeModal />}
-      {state.pendingAction?.type === 'MARKET_MANIPULATOR' && canInteract && <MarketManipulatorModal />}
+      {showActionModal && state.pendingAction?.type === 'MARKET_MANIPULATOR' && canInteract && <MarketManipulatorModal />}
       {state.gamePhase === 'GAME_OVER' && <WinnerModal />}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
       {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
