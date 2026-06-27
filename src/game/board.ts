@@ -33,21 +33,22 @@ export function createBoard(): Square[] {
 
   for (let i = 0; i < allTickers.length; i++) {
     const ticker = allTickers[i];
+    const fmtQBI = (v: number) => `${v > 0 ? '+' : ''}${v}`;
     stockSquares.push({
       id: -1,
       type: 'STOCK_POSITIVE',
       stock: ticker,
       qbiChange: posChanges[i],
-      label: `${ticker}`,
-      description: `+QBI ${posChanges[i] > 0 ? '+' : ''}${posChanges[i]}`,
+      label: fmtQBI(posChanges[i]),
+      description: `+QBI ${fmtQBI(posChanges[i])}`,
     });
     stockSquares.push({
       id: -1,
       type: 'STOCK_NEGATIVE',
       stock: ticker,
       qbiChange: negChanges[i],
-      label: `${ticker}`,
-      description: `QBI ${negChanges[i] > 0 ? '+' : ''}${negChanges[i]}`,
+      label: fmtQBI(negChanges[i]),
+      description: `QBI ${fmtQBI(negChanges[i])}`,
     });
   }
 
@@ -57,7 +58,7 @@ export function createBoard(): Square[] {
       type: 'STOCK_HOLDER_MEETING',
       stock: ticker,
       qbiChange: 0,
-      label: `${ticker} Meeting`,
+      label: 'Meeting',
       description: 'Stock Holder Meeting',
     });
   }
@@ -87,7 +88,7 @@ export function createBoard(): Square[] {
       id: -1,
       type: 'MARKET_MANIPULATOR',
       qbiChange: 0,
-      label: 'Market Manipulator',
+      label: 'Market\nManipulator',
       description: 'Influence the market!',
     });
   }

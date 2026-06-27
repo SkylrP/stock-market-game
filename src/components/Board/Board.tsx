@@ -13,6 +13,11 @@ const SQUARE_COLORS: Record<SquareType, string> = {
   MARKET_MANIPULATOR: 'var(--accent-cyan)',
 };
 
+function stockColor(qbiChange?: number): string {
+  if (!qbiChange) return SQUARE_COLORS.STOCK_POSITIVE;
+  return qbiChange > 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+}
+
 const SQUARE_LABELS: Record<SquareType, string> = {
   START: 'S',
   STOCK_POSITIVE: '▲',
@@ -84,10 +89,16 @@ export function Board() {
             <div
               key={idx}
               className={`board-square ${isCurrent ? 'current' : ''} ${square.type.toLowerCase()}`}
-              style={{ borderColor: SQUARE_COLORS[square.type] }}
+              style={{
+                borderColor: square.type === 'STOCK_POSITIVE' || square.type === 'STOCK_NEGATIVE'
+                  ? stockColor(square.qbiChange) : SQUARE_COLORS[square.type],
+              }}
             >
               <div className="square-top">
-                <span className="square-icon" style={{ color: SQUARE_COLORS[square.type] }}>
+                <span className="square-icon" style={{
+                  color: square.type === 'STOCK_POSITIVE' || square.type === 'STOCK_NEGATIVE'
+                    ? stockColor(square.qbiChange) : SQUARE_COLORS[square.type],
+                }}>
                   {SQUARE_LABELS[square.type]}
                 </span>
                 {square.type === 'STOCK_POSITIVE' || square.type === 'STOCK_NEGATIVE' || square.type === 'STOCK_HOLDER_MEETING' ? (
