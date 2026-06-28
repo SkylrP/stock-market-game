@@ -39,7 +39,7 @@ export interface Player {
   totalEarned: number;
   inMarket: boolean;
   hasRolled: boolean;
-  canSellBeforeRoll: boolean;
+  lastTurnSnapshot: { totalValue: number; qbi: number } | null;
 }
 
 export interface GameState {
@@ -71,7 +71,6 @@ export type PendingAction =
   | { type: 'PAY_FEE'; amount: number; reason: string }
   | { type: 'BROKER_FEE' }
   | { type: 'SELL_FOR_FEE'; amount: number; reason: string }
-  | { type: 'SELL_BEFORE_ROLL' }
   | null;
 
 export interface AnimationState {

@@ -504,42 +504,6 @@ export function MarketManipulatorModal() {
   );
 }
 
-export function SellBeforeRollModal() {
-  const { state, dispatch } = useGame();
-  const player = state.players[state.currentPlayerIndex];
-
-  if (!player) return null;
-
-  const handleClose = () => {
-    dispatch({ type: 'CLEAR_PENDING' });
-  };
-
-  const ownedTickers = getOwnedTickers(player.portfolio);
-
-  return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal modal-warning glass" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>⚠️ Sell Before Rolling</h3>
-          <button className="btn-close" onClick={handleClose}>✕</button>
-        </div>
-        <p className="warning-text">
-          You can sell stocks by tapping them in your portfolio below.
-          Selling is only available <strong>before</strong> you roll the dice.
-        </p>
-        <div className="warning-tickers">
-          {ownedTickers.map(t => (
-            <span key={t} className="warning-chip">{t} ({player.portfolio[t]} shares)</span>
-          ))}
-        </div>
-        <button className="btn btn-ghost btn-block skip-btn" onClick={handleClose}>
-          Got it
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export function WinnerModal() {
   const { state, dispatch } = useGame();
 

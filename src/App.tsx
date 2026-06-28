@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useGame } from './state/GameContext';
+import { calculateTotalValue } from './game/player';
 import { SetupScreen } from './components/SetupScreen/SetupScreen';
 import { Board } from './components/Board/Board';
 import { DiceRoller } from './components/DiceRoller/DiceRoller';
@@ -13,7 +14,6 @@ import {
   FeeModal,
   MarketManipulatorModal,
   WinnerModal,
-  SellBeforeRollModal,
 } from './components/Modals/Modals';
 import { HelpModal } from './components/HelpModal/HelpModal';
 import { LeaderboardModal } from './components/LeaderboardModal/LeaderboardModal';
@@ -67,11 +67,6 @@ function GameScreenContent({
     dispatch({ type: 'END_TURN' });
   };
 
-  const handleSellBeforeRoll = () => {
-    if (!canInteract) return;
-    dispatch({ type: 'OPEN_SELL_MODAL' });
-  };
-
   const getActionLabel = () => {
     const a = state.pendingAction;
     if (!a) return '';
@@ -92,12 +87,15 @@ function GameScreenContent({
     && !state.pendingAction;
 
   const hasShares = activePlayer && Object.values(activePlayer.portfolio).some(v => v > 0);
-  const canSellBeforeRoll = activePlayer?.canSellBeforeRoll
-    && !activePlayer.hasRolled
-    && hasShares
-    && activePlayer.inMarket
-    && !state.pendingAction
-    && !state.animationState.diceRolling;
+
+
+
+  const snapshot = activePlayer?.lastTurnSnapshot;
+  const snapshotCurrentTotal = activePlayer
+    ? calculateTotalValue(activePlayer.cash, activePlayer.portfolio, state.stockPrices)
+    : 0;
+  const snapshotCapitalChange = snapshot ? snapshotCurrentTotal - snapshot.totalValue : 0;
+  const snapshotQbiChange = snapshot ? state.qbi - snapshot.qbi : 0;
 
   const waitingPlayer = !canInteract && activePlayer
     ? state.players[state.currentPlayerIndex]
@@ -142,10 +140,14 @@ function GameScreenContent({
             <span>Roll your lucky number ({activePlayer?.luckyNumber}) to earn $400!</span>
           </div>
         )}
-        {canSellBeforeRoll && canInteract && (
-          <button className="btn btn-danger btn-sm sell-before-btn" onClick={handleSellBeforeRoll}>
-            Sell Shares Before Rolling
-          </button>
+        {canInteract && activePlayer?.inMarket && snapshot && (
+          <div className="turn-snapshot-bar">
+            <span className={snapshotCapitalChange >= 0 ? 'capital-gain' : 'capital-loss'}>
+              {snapshotCapitalChange >= 0 ? 'Capital Gains' : 'Capital Losses'}: {snapshotCapitalChange >= 0 ? '+' : ''}${snapshotCapitalChange.toFixed(2)}
+            </span>
+            <span className="snapshot-divider">|</span>
+            <span>QBI: {snapshot.qbi} &rarr; {state.qbi}</span>
+          </div>
         )}
         <DiceRoller disabled={!canInteract} />
         <StockPortfolio myPlayerIndex={displayIdx} canInteract={canInteract} />
@@ -198,7 +200,6 @@ function GameScreenContent({
         )}
       </div>
 
-      {state.pendingAction?.type === 'SELL_BEFORE_ROLL' && canInteract && <SellBeforeRollModal />}
       {showActionModal && state.pendingAction?.type === 'BUY_SELL' && canInteract && <BuySellModal />}
       {showActionModal && state.pendingAction?.type === 'STOCK_HOLDER_MEETING' && canInteract && <StockMeetingModal />}
       {(state.pendingAction?.type === 'PAY_FEE' ||

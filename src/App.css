@@ -65,9 +65,37 @@
   padding: 4px 0;
 }
 
-.sell-before-btn {
+
+
+.turn-snapshot-bar {
   margin: 4px 12px;
   width: calc(100% - 24px);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 212, 255, 0.12);
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.capital-gain {
+  color: var(--accent-green);
+}
+
+.capital-loss {
+  color: var(--accent-red);
+}
+
+.snapshot-divider {
+  color: var(--text-muted);
+  opacity: 0.5;
 }
 
 .bottom-row {

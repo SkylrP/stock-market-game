@@ -86,13 +86,17 @@ export function migrateState(state: GameState): GameState {
   let changed = s !== state;
   const players = s.players.map(p => {
     const updates: Partial<Player> = {};
-    if (!p.costBasis) {
-      const cb = {} as Record<StockTicker, number>;
-      for (const t of STOCKS_DATA) cb[t.ticker] = 0;
-      updates.costBasis = cb;
-      changed = true;
-    }
-    return Object.keys(updates).length ? { ...p, ...updates } : p;
+      if (!p.costBasis) {
+        const cb = {} as Record<StockTicker, number>;
+        for (const t of STOCKS_DATA) cb[t.ticker] = 0;
+        updates.costBasis = cb;
+        changed = true;
+      }
+      if (!('lastTurnSnapshot' in p)) {
+        updates.lastTurnSnapshot = null;
+        changed = true;
+      }
+      return Object.keys(updates).length ? { ...p, ...updates } : p;
   });
   return changed ? { ...s, players } : s;
 }
@@ -166,7 +170,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         totalEarned: 0,
         inMarket: false,
         hasRolled: false,
-        canSellBeforeRoll: false,
+        lastTurnSnapshot: null,
       };
       return { ...state, players: [...state.players, player] };
     }
@@ -175,7 +179,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const newPlayers = state.players.map(p => ({
         ...p,
         hasRolled: false,
-        canSellBeforeRoll: false,
       }));
       return {
         ...state,
@@ -605,9 +608,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'END_TURN': {
       let nextIdx = (state.currentPlayerIndex + 1) % state.players.length;
       const player = getCurrentPlayer(state);
+      const snapshotTotal = calculateTotalValue(player.cash, player.portfolio, state.stockPrices);
       let newState = updatePlayer(state, player.id, {
         hasRolled: false,
-        canSellBeforeRoll: true,
+        lastTurnSnapshot: { totalValue: snapshotTotal, qbi: state.qbi },
       });
 
       newState = {
@@ -631,10 +635,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
       return newState;
-    }
-
-    case 'OPEN_SELL_MODAL': {
-      return { ...state, pendingAction: { type: 'SELL_BEFORE_ROLL' } };
     }
 
     case 'NEW_GAME': {
