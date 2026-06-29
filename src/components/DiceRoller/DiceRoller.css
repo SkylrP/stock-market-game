@@ -29,12 +29,12 @@
 .dice {
   width: 56px;
   height: 56px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ffffff, #e0e0e0);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--dice-bg-start), var(--dice-bg-end));
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-md);
   transition: transform 0.1s;
 }
 
@@ -80,14 +80,14 @@
   justify-content: center;
   font-size: 24px;
   font-weight: 800;
-  color: #999;
+  color: var(--dice-empty-color);
 }
 
 .dice-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #1a1a2e;
+  background: var(--dice-dot-bg);
   justify-self: center;
   align-self: center;
 }

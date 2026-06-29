@@ -22,21 +22,21 @@
 .qbi-value {
   font-size: 20px;
   font-weight: 800;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   color: var(--text-primary);
 }
 .qbi-value.high { color: var(--accent-green); }
 .qbi-value.low { color: var(--accent-red); }
 
 .qbi-chart {
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   overflow: visible;
 }
 
 .qbi-delta {
   font-size: 13px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }
 .qbi-delta.delta-up { color: var(--accent-green); }
 .qbi-delta.delta-down { color: var(--accent-red); }

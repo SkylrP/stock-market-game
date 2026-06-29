@@ -1,7 +1,7 @@
 .slot-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--overlay-bg-heavy);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,7 +83,7 @@
 .slot-multiplier {
   font-size: 48px;
   font-weight: 800;
-  background: linear-gradient(135deg, #ffd740, #ff9f43);
+  background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

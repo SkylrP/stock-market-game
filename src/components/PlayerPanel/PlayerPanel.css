@@ -41,7 +41,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-sm);
 }
 
 .player-name {
@@ -53,10 +53,10 @@
   font-size: 11px;
   font-weight: 700;
   color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   padding: 2px 8px;
   background: var(--bg-primary);
-  border-radius: 10px;
+  border-radius: var(--radius-pill);
 }
 
 .player-rank.clickable {
@@ -75,7 +75,7 @@
 
 .status-badge {
   padding: 4px 10px;
-  border-radius: 20px;
+  border-radius: var(--radius-pill);
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -83,17 +83,17 @@
 }
 
 .status-badge.work {
-  background: rgba(0, 212, 255, 0.15);
+  background: rgba(var(--accent-cyan-rgb), 0.15);
   color: var(--accent-cyan);
 }
 
 .status-badge.market {
-  background: rgba(0, 230, 118, 0.15);
+  background: rgba(var(--accent-green-rgb), 0.15);
   color: var(--accent-green);
 }
 
 .status-badge.winner {
-  background: rgba(255, 215, 64, 0.2);
+  background: rgba(var(--accent-yellow-rgb), 0.2);
   color: var(--accent-yellow);
   animation: pulse 1.5s infinite;
 }
@@ -125,7 +125,7 @@
 .stat-value {
   font-size: 16px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }
 
 .stat-value.highlight {
@@ -135,7 +135,7 @@
 .stat-delta {
   font-size: 12px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }
 .stat-delta.delta-up { color: var(--accent-green); }
 .stat-delta.delta-down { color: var(--accent-red); }
@@ -150,18 +150,18 @@
   width: 100%;
   height: 4px;
   background: var(--bg-primary);
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
   transition: width 0.5s ease;
 }
 
 .progress-label {
   font-size: 10px;
   color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }

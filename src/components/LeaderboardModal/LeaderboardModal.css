@@ -4,7 +4,7 @@
   left: 24px;
   right: 24px;
   max-height: 60vh;
-  border-radius: 16px 16px 0 0;
+  border-radius: var(--radius-top);
   animation: slideUp 0.3s ease;
   z-index: 60;
   padding: 16px;
@@ -35,7 +35,7 @@
 
 .leaderboard-table td {
   padding: 10px 6px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--border-subtle);
   vertical-align: middle;
 }
 
@@ -47,7 +47,7 @@
   width: 28px;
   text-align: center;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   color: var(--text-muted);
 }
 
@@ -71,7 +71,7 @@
 
 .col-cash,
 .col-total {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-weight: 600;
   white-space: nowrap;
 }

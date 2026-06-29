@@ -20,6 +20,7 @@ import { LeaderboardModal } from './components/LeaderboardModal/LeaderboardModal
 import { MenuScreen } from './components/MenuScreen/MenuScreen';
 import { MultiplayerLobby } from './components/MultiplayerLobby/MultiplayerLobby';
 import { MultiplayerSetupScreen } from './components/MultiplayerSetupScreen/MultiplayerSetupScreen';
+import { loadTheme, saveTheme, applyTheme } from './themes';
 import './App.css';
 
 interface LobbyPlayer {
@@ -300,6 +301,17 @@ function App() {
   const [lobbyPlayers, setLobbyPlayers] = useState<LobbyPlayer[]>([]);
   const [lobbyPlayerId, setLobbyPlayerId] = useState(0);
   const wsRef = useRef<WebSocket | null>(null);
+  const [theme, setTheme] = useState<string>(() => loadTheme());
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
+  const handleThemeChange = (id: string) => {
+    setTheme(id);
+    saveTheme(id);
+    applyTheme(id);
+  };
 
   const handleLocalGame = () => {
     setScreen('setup');
@@ -324,7 +336,7 @@ function App() {
   }, []);
 
   if (screen === 'menu') {
-    return <MenuScreen onLocalGame={handleLocalGame} onMultiplayer={() => setScreen('lobby')} />;
+    return <MenuScreen onLocalGame={handleLocalGame} onMultiplayer={() => setScreen('lobby')} theme={theme} onThemeChange={handleThemeChange} />;
   }
 
   if (screen === 'lobby') {

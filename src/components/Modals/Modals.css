@@ -1,7 +1,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--overlay-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,9 +35,9 @@
 
 .owned-badge {
   padding: 4px 10px;
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(var(--accent-cyan-rgb), 0.1);
   color: var(--accent-cyan);
-  border-radius: 20px;
+  border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 600;
 }
@@ -60,14 +60,14 @@
 .price-value {
   font-size: 22px;
   font-weight: 800;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   color: var(--accent-cyan);
 }
 
 .price-change {
   font-size: 11px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   text-align: right;
 }
 
@@ -93,12 +93,12 @@
 }
 .modal-cash strong {
   color: var(--text-primary);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }
 .modal-qbi {
   color: var(--accent-cyan);
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }
 
 .dividend-notification {
@@ -107,13 +107,13 @@
   color: var(--accent-green);
   padding: 8px 12px;
   margin-bottom: 12px;
-  background: rgba(105, 219, 124, 0.1);
+  background: rgba(var(--accent-green-rgb), 0.1);
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(105, 219, 124, 0.2);
+  border: 1px solid rgba(var(--accent-green-rgb), 0.2);
   animation: fadeIn 0.3s ease;
 }
 .dividend-notification strong {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }
 
 .pnl-info {
@@ -130,7 +130,7 @@
 }
 .pnl-value {
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }
 
 .modal-actions {
@@ -172,7 +172,7 @@
   text-align: center;
   font-size: 18px;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   padding: 8px;
   background: var(--bg-primary);
   border-radius: var(--radius-sm);
@@ -227,18 +227,18 @@
 
 .ticker-chip {
   padding: 6px 12px;
-  border-radius: 20px;
+  border-radius: var(--radius-pill);
   background: var(--bg-primary);
   border: 1px solid var(--border);
   font-size: 12px;
   font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   transition: all 0.2s;
 }
 
 .ticker-chip.selected {
   border-color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(var(--accent-cyan-rgb), 0.1);
   color: var(--accent-cyan);
 }
 
@@ -253,7 +253,7 @@
 .toggle-btn {
   flex: 1;
   padding: 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
@@ -262,12 +262,12 @@
 
 .toggle-btn.active-buy {
   background: var(--accent-green);
-  color: #000;
+  color: var(--btn-success-text);
 }
 
 .toggle-btn.active-sell {
   background: var(--accent-red);
-  color: #fff;
+  color: var(--btn-danger-text);
 }
 
 .winner-modal {
@@ -283,7 +283,7 @@
 .winner-title {
   font-size: 28px;
   font-weight: 800;
-  background: linear-gradient(135deg, #ffd740, #ff9f43);
+  background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -300,7 +300,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass-bg-subtle);
   color: var(--text-muted);
   font-size: 14px;
   display: flex;
@@ -311,7 +311,7 @@
 }
 
 .btn-close:active {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--glass-bg-hover);
 }
 
 .dice-pair {

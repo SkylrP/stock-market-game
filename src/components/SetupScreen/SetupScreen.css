@@ -108,7 +108,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(255, 82, 82, 0.15);
+  background: rgba(var(--accent-red-rgb), 0.15);
   color: var(--accent-red);
   font-size: 14px;
   display: flex;
@@ -119,7 +119,7 @@
 }
 
 .btn-remove:active {
-  background: rgba(255, 82, 82, 0.3);
+  background: rgba(var(--accent-red-rgb), 0.3);
 }
 
 .lucky-number-picker {
@@ -156,9 +156,9 @@
 
 .num-btn.selected {
   border-color: var(--accent-cyan);
-  background: rgba(0, 212, 255, 0.15);
+  background: rgba(var(--accent-cyan-rgb), 0.15);
   color: var(--accent-cyan);
-  box-shadow: 0 0 12px rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 12px rgba(var(--accent-cyan-rgb), 0.2);
 }
 
 .num-btn.used {

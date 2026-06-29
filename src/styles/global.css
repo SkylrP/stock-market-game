@@ -18,9 +18,57 @@
   --glass-bg: rgba(26, 26, 62, 0.7);
   --glass-border: rgba(255, 255, 255, 0.08);
   --shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-  --radius: 12px;
+  --radius-xs: 4px;
   --radius-sm: 8px;
+  --radius: 12px;
   --radius-lg: 20px;
+  --radius-pill: 20px;
+  --radius-top: 16px 16px 0 0;
+
+  /* RGB channel values for rgba() in themes */
+  --accent-cyan-rgb: 0, 212, 255;
+  --accent-green-rgb: 0, 230, 118;
+  --accent-red-rgb: 255, 82, 82;
+  --accent-yellow-rgb: 255, 215, 64;
+  --accent-purple-rgb: 187, 134, 252;
+  --accent-orange-rgb: 255, 159, 67;
+
+  /* Overlay backgrounds */
+  --overlay-bg: rgba(0, 0, 0, 0.75);
+  --overlay-bg-heavy: rgba(0, 0, 0, 0.8);
+
+  /* Dice */
+  --dice-bg-start: #ffffff;
+  --dice-bg-end: #e0e0e0;
+  --dice-dot-bg: #1a1a2e;
+  --dice-empty-color: #999999;
+
+  /* Board */
+  --player-piece-border: rgba(255, 255, 255, 0.6);
+
+  /* Glass utility tints */
+  --glass-blur: blur(20px);
+  --glass-bg-hover: rgba(255, 255, 255, 0.1);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.05);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+
+  /* Button gradient end stops */
+  --btn-primary-gradient-end: #0099cc;
+  --btn-danger-gradient-end: #d32f2f;
+  --btn-success-gradient-end: #00c853;
+
+  /* Button text colors */
+  --btn-primary-text: #000000;
+  --btn-danger-text: #ffffff;
+  --btn-success-text: #000000;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  /* Font families */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 * {
@@ -35,7 +83,7 @@ html, body {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-family);
   background: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
@@ -51,7 +99,7 @@ body {
 }
 
 button {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   border: none;
   outline: none;
@@ -61,7 +109,7 @@ button {
 }
 
 input {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-family);
   outline: none;
   border: none;
   background: none;
@@ -78,7 +126,7 @@ input {
 
 ::-webkit-scrollbar-thumb {
   background: var(--text-muted);
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
 }
 
 @keyframes fadeIn {
@@ -108,8 +156,8 @@ input {
 
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: var(--glass-blur, blur(20px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(20px));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
 }
@@ -133,13 +181,13 @@ input {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent-cyan), #0099cc);
-  color: #000;
-  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  background: linear-gradient(135deg, var(--accent-cyan), var(--btn-primary-gradient-end));
+  color: var(--btn-primary-text);
+  box-shadow: 0 4px 15px rgba(var(--accent-cyan-rgb), 0.3);
 }
 
 .btn-primary:active {
-  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(var(--accent-cyan-rgb), 0.2);
 }
 
 .btn-secondary {
@@ -153,15 +201,15 @@ input {
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, var(--accent-red), #d32f2f);
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
+  background: linear-gradient(135deg, var(--accent-red), var(--btn-danger-gradient-end));
+  color: var(--btn-danger-text);
+  box-shadow: 0 4px 15px rgba(var(--accent-red-rgb), 0.3);
 }
 
 .btn-success {
-  background: linear-gradient(135deg, var(--accent-green), #00c853);
-  color: #000;
-  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+  background: linear-gradient(135deg, var(--accent-green), var(--btn-success-gradient-end));
+  color: var(--btn-success-text);
+  box-shadow: 0 4px 15px rgba(var(--accent-green-rgb), 0.3);
 }
 
 .btn-ghost {
@@ -192,3 +240,67 @@ input {
 .value-up { color: var(--accent-green); }
 .value-down { color: var(--accent-red); }
 .value-neutral { color: var(--text-secondary); }
+
+/* ---- Classic 60's Board Game Theme ---- */
+[data-theme="classic"] {
+  --bg-primary: #f5f0e1;
+  --bg-secondary: #ede4d0;
+  --bg-card: #e0d5be;
+  --bg-card-hover: #d5c9b0;
+  --text-primary: #2c1810;
+  --text-secondary: #7a6b58;
+  --text-muted: #a0907a;
+  --accent-cyan: #3a6b8c;
+  --accent-green: #5d8a5c;
+  --accent-red: #b85c4a;
+  --accent-yellow: #c9a84c;
+  --accent-purple: #7a6b8c;
+  --accent-orange: #c4814a;
+  --accent-cyan-rgb: 58, 107, 140;
+  --accent-green-rgb: 93, 138, 92;
+  --accent-red-rgb: 184, 92, 74;
+  --accent-yellow-rgb: 201, 168, 76;
+  --accent-purple-rgb: 122, 107, 140;
+  --accent-orange-rgb: 196, 129, 74;
+  --border: #c8b89e;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --glass-bg: rgba(224, 213, 190, 0.88);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-bg-hover: rgba(0, 0, 0, 0.06);
+  --glass-bg-subtle: rgba(0, 0, 0, 0.03);
+  --glass-blur: none;
+  --overlay-bg: rgba(80, 60, 40, 0.65);
+  --overlay-bg-heavy: rgba(50, 40, 30, 0.8);
+  --dice-bg-start: #f0e8d8;
+  --dice-bg-end: #d8cfbc;
+  --dice-dot-bg: #2c1810;
+  --dice-empty-color: #a0907a;
+  --player-piece-border: rgba(0, 0, 0, 0.25);
+  --btn-primary-gradient-end: #2d5570;
+  --btn-danger-gradient-end: #934a3a;
+  --btn-success-gradient-end: #4a7048;
+  --btn-primary-text: #ffffff;
+  --btn-danger-text: #ffffff;
+  --btn-success-text: #ffffff;
+  --shadow-sm: 0 2px 6px rgba(60, 40, 20, 0.25);
+  --shadow-md: 0 4px 12px rgba(60, 40, 20, 0.2);
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius: 0px;
+  --radius-lg: 0px;
+  --radius-pill: 0px;
+  --radius-top: 0;
+  --font-family: 'Georgia', 'Times New Roman', serif;
+  --font-mono: 'Courier New', 'Consolas', monospace;
+}
+
+[data-theme="classic"] .modal-overlay,
+[data-theme="classic"] .theme-modal-overlay {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+[data-theme="classic"] .slot-overlay {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

@@ -36,11 +36,11 @@
 
 .board-square.current {
   transform: translateY(-4px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 .board-square.start {
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(var(--accent-cyan-rgb), 0.1);
 }
 
 .square-top {
@@ -89,7 +89,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 2px solid var(--player-piece-border);
   box-sizing: border-box;
   flex-shrink: 0;
 }
