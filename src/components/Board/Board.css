@@ -88,7 +88,8 @@
 .player-piece {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
+  border-radius: var(--player-piece-radius);
+  clip-path: var(--player-piece-clip);
   border: 2px solid var(--player-piece-border);
   box-sizing: border-box;
   flex-shrink: 0;

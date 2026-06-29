@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 :root {
   --bg-primary: #0a0a1a;
@@ -39,13 +39,19 @@
 
   /* Dice */
   --dice-radius: var(--radius);
+  --dice-border: none;
   --dice-bg-start: #ffffff;
   --dice-bg-end: #e0e0e0;
   --dice-dot-bg: #1a1a2e;
+  --dice-dot-clip: none;
+  --dice-dot-radius: 50%;
+  --dice-dot-size: 8px;
   --dice-empty-color: #999999;
 
   /* Board */
   --player-piece-border: rgba(255, 255, 255, 0.6);
+  --player-piece-clip: none;
+  --player-piece-radius: 50%;
 
   /* Glass utility tints */
   --glass-blur: blur(20px);
@@ -62,6 +68,9 @@
   --btn-primary-text: #000000;
   --btn-danger-text: #ffffff;
   --btn-success-text: #000000;
+
+  /* Bevel clip (45° cut corners) */
+  --bevel-clip: none;
 
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -161,6 +170,7 @@ input {
   -webkit-backdrop-filter: var(--glass-blur, blur(20px));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
+  clip-path: var(--bevel-clip);
 }
 
 .btn {
@@ -175,6 +185,7 @@ input {
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
+  clip-path: var(--bevel-clip);
 }
 
 .btn:active {
@@ -337,12 +348,17 @@ input {
   --glass-blur: blur(20px);
   --overlay-bg: rgba(8, 5, 0, 0.75);
   --overlay-bg-heavy: rgba(5, 3, 0, 0.85);
-  --dice-radius: 12px;
+  --bevel-clip: polygon(0px 6px, 6px 0px, calc(100% - 6px) 0px, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0px calc(100% - 6px));
+  --dice-radius: 0px;
   --dice-bg-start: #f5e8c8;
   --dice-bg-end: #d4c49a;
-  --dice-dot-bg: #2a1a08;
+  --dice-dot-bg: #b8922e;
+  --dice-dot-clip: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  --dice-dot-radius: 0;
+  --dice-dot-size: 9px;
   --dice-empty-color: #a09070;
   --player-piece-border: rgba(201, 168, 76, 0.5);
+  --player-piece-clip: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   --btn-primary-gradient-end: #a88a32;
   --btn-danger-gradient-end: #702020;
   --btn-success-gradient-end: #207040;
@@ -351,12 +367,12 @@ input {
   --btn-success-text: #0d0a02;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --radius-pill: 8px;
-  --radius-top: 8px 8px 0 0;
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius: 0px;
+  --radius-lg: 0px;
+  --radius-pill: 0px;
+  --radius-top: 0;
   --font-family: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'Courier New', 'Consolas', monospace;
 }
@@ -370,13 +386,13 @@ input {
   --text-primary: #ffffff;
   --text-secondary: #c0a0e0;
   --text-muted: #8040aa;
-  --accent-cyan: #00e5ff;
+  --accent-cyan: #0088ff;
   --accent-green: #00ff7f;
   --accent-red: #ff0066;
   --accent-yellow: #ffea00;
   --accent-purple: #ff00ff;
   --accent-orange: #ff6600;
-  --accent-cyan-rgb: 0, 229, 255;
+  --accent-cyan-rgb: 0, 136, 255;
   --accent-green-rgb: 0, 255, 127;
   --accent-red-rgb: 255, 0, 102;
   --accent-yellow-rgb: 255, 234, 0;
@@ -392,26 +408,30 @@ input {
   --overlay-bg: rgba(10, 0, 26, 0.8);
   --overlay-bg-heavy: rgba(5, 0, 15, 0.9);
   --dice-radius: 8px;
+  --dice-border: 1px solid var(--accent-cyan);
   --dice-bg-start: #1a0033;
   --dice-bg-end: #26004a;
-  --dice-dot-bg: #00e5ff;
+  --dice-dot-bg: #0088ff;
+  --dice-dot-radius: 0;
+  --dice-dot-clip: polygon(50% 0%, 100% 100%, 0% 100%);
   --dice-empty-color: #8040aa;
   --player-piece-border: rgba(255, 0, 255, 0.5);
-  --btn-primary-gradient-end: #0099cc;
+  --player-piece-clip: polygon(50% 0%, 0% 100%, 100% 100%);
+  --btn-primary-gradient-end: #0066cc;
   --btn-danger-gradient-end: #cc0055;
   --btn-success-gradient-end: #00cc66;
   --btn-primary-text: #000000;
   --btn-danger-text: #ffffff;
   --btn-success-text: #000000;
   --shadow-sm: 0 2px 8px rgba(255, 0, 255, 0.2);
-  --shadow-md: 0 4px 16px rgba(0, 229, 255, 0.25);
+  --shadow-md: 0 4px 16px rgba(255, 0, 255, 0.3);
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius: 12px;
   --radius-lg: 20px;
   --radius-pill: 20px;
   --radius-top: 12px 12px 0 0;
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family: 'Orbitron', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -445,12 +465,15 @@ input {
   --glass-blur: none;
   --overlay-bg: rgba(16, 24, 12, 0.75);
   --overlay-bg-heavy: rgba(10, 16, 8, 0.85);
-  --dice-radius: 10px;
+  --dice-radius: 12px 0 12px 12px;
   --dice-bg-start: #e8e0d0;
   --dice-bg-end: #d0c8b0;
-  --dice-dot-bg: #243020;
-  --dice-empty-color: #6a7a5a;
+  --dice-dot-bg: #4a8a7a;
+  --dice-dot-radius: 50% 0 50% 50%;
+  --dice-empty-color: #5a7a4a;
   --player-piece-border: rgba(200, 168, 74, 0.4);
+  --player-piece-radius: 50% 0 50% 50%;
+  --player-piece-clip: none;
   --btn-primary-gradient-end: #3a6a5a;
   --btn-danger-gradient-end: #6a3a2a;
   --btn-success-gradient-end: #4a6a3a;
@@ -459,12 +482,12 @@ input {
   --btn-success-text: #ffffff;
   --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --radius-pill: 16px;
-  --radius-top: 12px 12px 0 0;
+  --radius-xs: 4px 0 4px 4px;
+  --radius-sm: 8px 0 8px 8px;
+  --radius: 12px 0 12px 12px;
+  --radius-lg: 16px 0 16px 16px;
+  --radius-pill: 16px 0 16px 16px;
+  --radius-top: 12px 0 0 0;
   --font-family: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'Courier New', 'Consolas', monospace;
 }

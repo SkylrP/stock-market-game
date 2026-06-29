@@ -17,6 +17,7 @@ import {
 } from './components/Modals/Modals';
 import { HelpModal } from './components/HelpModal/HelpModal';
 import { LeaderboardModal } from './components/LeaderboardModal/LeaderboardModal';
+import { InGameMenu } from './components/InGameMenu/InGameMenu';
 import { MenuScreen } from './components/MenuScreen/MenuScreen';
 import { MultiplayerLobby } from './components/MultiplayerLobby/MultiplayerLobby';
 import { MultiplayerSetupScreen } from './components/MultiplayerSetupScreen/MultiplayerSetupScreen';
@@ -32,13 +33,17 @@ function GameScreenContent({
   onBackToMenu,
   canInteract,
   myPlayerIndex,
+  theme,
+  onThemeChange,
 }: {
   onBackToMenu: () => void
   canInteract: boolean
   myPlayerIndex?: number
+  theme: string
+  onThemeChange: (id: string) => void
 }) {
   const { state, dispatch } = useGame();
-  const [confirmingNewGame, setConfirmingNewGame] = useState(false);
+  const [showInGameMenu, setShowInGameMenu] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showActionModal, setShowActionModal] = useState(false);
@@ -170,35 +175,29 @@ function GameScreenContent({
             </button>
           </div>
         )}
-        {confirmingNewGame ? (
-          <div className="confirm-restart">
-            <span className="confirm-text">Restart game?</span>
-            <button className="btn btn-danger btn-sm" onClick={() => { dispatch({ type: 'NEW_GAME' }); setConfirmingNewGame(false); }}>
-              Yes
-            </button>
-            <button className="btn btn-ghost btn-sm" onClick={() => setConfirmingNewGame(false)}>
-              Cancel
-            </button>
-          </div>
-        ) : (
-          <div className="bottom-row">
-            <button className="btn btn-ghost btn-sm help-btn" onClick={() => setShowHelp(true)}>?</button>
-            <button className="btn btn-ghost btn-sm" onClick={() => setConfirmingNewGame(true)}>
-              New Game
-            </button>
-            <button className="btn btn-ghost btn-sm" onClick={onBackToMenu}>
-              Menu
-            </button>
-            <a
-              className="btn btn-ghost btn-sm"
-              href="https://spot.fund/StockMarketGame"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Donate
-            </a>
-          </div>
+        {showInGameMenu && (
+          <InGameMenu
+            onClose={() => setShowInGameMenu(false)}
+            onLeaveGame={onBackToMenu}
+            onRestartGame={() => dispatch({ type: 'NEW_GAME' })}
+            theme={theme}
+            onThemeChange={onThemeChange}
+          />
         )}
+        <div className="bottom-row">
+          <button className="btn btn-ghost btn-sm help-btn" onClick={() => setShowHelp(true)}>?</button>
+          <button className="btn btn-ghost btn-sm" onClick={() => setShowInGameMenu(true)}>
+            Menu
+          </button>
+          <a
+            className="btn btn-ghost btn-sm"
+            href="https://spot.fund/StockMarketGame"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Donate
+          </a>
+        </div>
       </div>
 
       {showActionModal && state.pendingAction?.type === 'BUY_SELL' && canInteract && <BuySellModal />}
@@ -215,18 +214,22 @@ function GameScreenContent({
   );
 }
 
-function LocalGameScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
-  return <GameScreenContent onBackToMenu={onBackToMenu} canInteract={true} />;
+function LocalGameScreen({ onBackToMenu, theme, onThemeChange }: { onBackToMenu: () => void; theme: string; onThemeChange: (id: string) => void }) {
+  return <GameScreenContent onBackToMenu={onBackToMenu} canInteract={true} theme={theme} onThemeChange={onThemeChange} />;
 }
 
 function MultiplayerGameScreen({
   onBackToMenu,
   ws,
   playerId,
+  theme,
+  onThemeChange,
 }: {
   onBackToMenu: () => void
   ws: WebSocket | null
   playerId: number
+  theme: string
+  onThemeChange: (id: string) => void
 }) {
   const { state, dispatch } = useGame();
   const myPlayerIndex = playerId - 1;
@@ -291,6 +294,8 @@ function MultiplayerGameScreen({
       onBackToMenu={onBackToMenu}
       canInteract={canInteract}
       myPlayerIndex={myPlayerIndex}
+      theme={theme}
+      onThemeChange={onThemeChange}
     />
   );
 }
@@ -359,7 +364,7 @@ function App() {
       <>
         {state.gamePhase === 'SETUP' && <SetupScreen onBack={handleBackToMenu} />}
         {state.gamePhase !== 'SETUP' && (
-          <LocalGameScreen onBackToMenu={handleBackToMenu} />
+          <LocalGameScreen onBackToMenu={handleBackToMenu} theme={theme} onThemeChange={handleThemeChange} />
         )}
       </>
     );
@@ -371,11 +376,13 @@ function App() {
         onBackToMenu={handleBackToMenu}
         ws={wsRef.current}
         playerId={lobbyPlayerId}
+        theme={theme}
+        onThemeChange={handleThemeChange}
       />
     );
   }
 
-  return <LocalGameScreen onBackToMenu={handleBackToMenu} />;
+  return <LocalGameScreen onBackToMenu={handleBackToMenu} theme={theme} onThemeChange={handleThemeChange} />;
 }
 
 export default App;
