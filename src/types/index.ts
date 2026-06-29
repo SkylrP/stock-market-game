@@ -40,6 +40,10 @@ export interface Player {
   inMarket: boolean;
   hasRolled: boolean;
   lastTurnSnapshot: { totalValue: number; qbi: number } | null;
+  totalTrades: number;
+  totalMeetings: number;
+  biggestDividend: number;
+  totalFeesPaid: number;
 }
 
 export interface GameState {

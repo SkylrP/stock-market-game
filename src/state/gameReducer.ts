@@ -96,6 +96,22 @@ export function migrateState(state: GameState): GameState {
         updates.lastTurnSnapshot = null;
         changed = true;
       }
+      if (!('totalTrades' in p)) {
+        updates.totalTrades = 0;
+        changed = true;
+      }
+      if (!('totalMeetings' in p)) {
+        updates.totalMeetings = 0;
+        changed = true;
+      }
+      if (!('biggestDividend' in p)) {
+        updates.biggestDividend = 0;
+        changed = true;
+      }
+      if (!('totalFeesPaid' in p)) {
+        updates.totalFeesPaid = 0;
+        changed = true;
+      }
       return Object.keys(updates).length ? { ...p, ...updates } : p;
   });
   return changed ? { ...s, players } : s;
@@ -171,6 +187,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         inMarket: false,
         hasRolled: false,
         lastTurnSnapshot: null,
+        totalTrades: 0,
+        totalMeetings: 0,
+        biggestDividend: 0,
+        totalFeesPaid: 0,
       };
       return { ...state, players: [...state.players, player] };
     }
@@ -274,7 +294,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (square.type === 'STOCK_POSITIVE' || square.type === 'STOCK_NEGATIVE') {
         const oldQbi = newState.qbi;
         const newQbi = moveQbi(oldQbi, square.qbiChange || 0);
-        const qbiHistory = [oldQbi, ...newState.qbiHistory].slice(0, 10);
+        const qbiHistory = [oldQbi, ...newState.qbiHistory];
         newState = { ...newState, qbi: newQbi, qbiHistory, stockPrices: calculateAllPrices(newQbi) };
 
         newState = {
@@ -296,6 +316,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           dividendAmount = Math.round(divPerShare * ownedShares * 100) / 100;
           newState = updatePlayer(newState, player.id, {
             cash: Math.round((player.cash + dividendAmount) * 100) / 100,
+            biggestDividend: Math.max(player.biggestDividend, dividendAmount),
           });
         }
 
@@ -350,13 +371,23 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const { ticker, shares } = action.payload as { ticker: StockTicker; shares: number };
       const player = getCurrentPlayer(state);
       if (!state.pendingAction || state.pendingAction.type !== 'BUY_SELL') return state;
-      return buyShares(state, player, ticker, shares, state.pendingAction.price);
+      let newState = buyShares(state, player, ticker, shares, state.pendingAction.price);
+      if (newState !== state) {
+        const p = getCurrentPlayer(newState);
+        newState = updatePlayer(newState, p.id, { totalTrades: p.totalTrades + 1 });
+      }
+      return newState;
     }
 
     case 'SELL_STOCK': {
       const { ticker, shares } = action.payload as { ticker: StockTicker; shares: number };
       const player = getCurrentPlayer(state);
-      return sellShares(state, player, ticker, shares);
+      let newState = sellShares(state, player, ticker, shares);
+      if (newState !== state) {
+        const p = getCurrentPlayer(newState);
+        newState = updatePlayer(newState, p.id, { totalTrades: p.totalTrades + 1 });
+      }
+      return newState;
     }
 
     case 'SELL_AT_LOWEST': {
@@ -374,6 +405,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (player.cash >= amount) {
         let newState = updatePlayer(state, player.id, {
           cash: Math.round((player.cash - amount) * 100) / 100,
+          totalFeesPaid: player.totalFeesPaid + amount,
         });
         return withWinCheck({ ...newState, pendingAction: null });
       }
@@ -391,6 +423,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (player.cash >= fee) {
         let newState = updatePlayer(state, player.id, {
           cash: Math.round((player.cash - fee) * 100) / 100,
+          totalFeesPaid: player.totalFeesPaid + fee,
         });
         return withWinCheck({ ...newState, pendingAction: null });
       }
@@ -411,6 +444,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (remainingNeeded <= 0) {
         let newState = updatePlayer(state, player.id, {
           cash: Math.round((player.cash - needed) * 100) / 100,
+          totalFeesPaid: player.totalFeesPaid + needed,
         });
         newState = { ...newState, pendingAction: null };
         return withWinCheck(newState);
@@ -432,15 +466,16 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           pendingAction: null,
           players: state.players.map(p =>
             p.id === player.id
-              ? { ...p, cash: 0, portfolio: {} as Record<StockTicker, number>, costBasis: {} as Record<StockTicker, number>, totalEarned: 0, inMarket: false }
+              ? { ...p, cash: 0, portfolio: {} as Record<StockTicker, number>, costBasis: {} as Record<StockTicker, number>, totalEarned: 0, inMarket: false, totalFeesPaid: player.totalFeesPaid + needed }
               : p
           ),
         };
       }
 
-      const currentCash = getCurrentPlayer(newState).cash;
+      const currentPlayer = getCurrentPlayer(newState);
       newState = updatePlayer(newState, player.id, {
-        cash: Math.round((currentCash - needed) * 100) / 100,
+        cash: Math.round((currentPlayer.cash - needed) * 100) / 100,
+        totalFeesPaid: currentPlayer.totalFeesPaid + needed,
       });
       newState = { ...newState, pendingAction: null };
       return withWinCheck(newState);
@@ -477,7 +512,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           slotResult: result,
         },
         players: state.players.map(p =>
-          p.id === player.id ? { ...p, portfolio: newPortfolio } : p
+          p.id === player.id ? { ...p, portfolio: newPortfolio, totalMeetings: player.totalMeetings + 1 } : p
         ),
         pendingAction: null,
       };
@@ -546,7 +581,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const diceValue = state.diceValue || 0;
       const change = direction === 'up' ? diceValue : -diceValue;
       const newQbi = moveQbi(state.qbi, change);
-      const qbiHistory = [state.qbi, ...state.qbiHistory].slice(0, 10);
+      const qbiHistory = [state.qbi, ...state.qbiHistory];
       return {
         ...state,
         qbi: newQbi,
@@ -567,6 +602,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (tradeAction === 'BUY') {
         let newState = buyShares(state, player, ticker, shares);
         if (newState === state) return state;
+        const p = getCurrentPlayer(newState);
+        newState = updatePlayer(newState, p.id, { totalTrades: p.totalTrades + 1 });
         newState = { ...newState, pendingAction: null };
         return withWinCheck(newState);
       }
@@ -574,6 +611,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (tradeAction === 'SELL') {
         let newState = sellShares(state, player, ticker, shares);
         if (newState === state) return state;
+        const p = getCurrentPlayer(newState);
+        newState = updatePlayer(newState, p.id, { totalTrades: p.totalTrades + 1 });
         newState = { ...newState, pendingAction: null };
         return withWinCheck(newState);
       }

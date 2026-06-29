@@ -13,11 +13,11 @@ import {
   StockMeetingModal,
   FeeModal,
   MarketManipulatorModal,
-  WinnerModal,
 } from './components/Modals/Modals';
 import { HelpModal } from './components/HelpModal/HelpModal';
 import { LeaderboardModal } from './components/LeaderboardModal/LeaderboardModal';
 import { InGameMenu } from './components/InGameMenu/InGameMenu';
+import { GameOverScreen } from './components/GameOverScreen/GameOverScreen';
 import { MenuScreen } from './components/MenuScreen/MenuScreen';
 import { MultiplayerLobby } from './components/MultiplayerLobby/MultiplayerLobby';
 import { MultiplayerSetupScreen } from './components/MultiplayerSetupScreen/MultiplayerSetupScreen';
@@ -206,7 +206,7 @@ function GameScreenContent({
         state.pendingAction?.type === 'BROKER_FEE' ||
         state.pendingAction?.type === 'SELL_FOR_FEE') && canInteract && <FeeModal />}
       {showActionModal && state.pendingAction?.type === 'MARKET_MANIPULATOR' && canInteract && <MarketManipulatorModal />}
-      {state.gamePhase === 'GAME_OVER' && <WinnerModal />}
+      {state.gamePhase === 'GAME_OVER' && <GameOverScreen onBackToMenu={onBackToMenu} />}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
       {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
       <SlotMachine />
