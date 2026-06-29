@@ -38,6 +38,7 @@
   --overlay-bg-heavy: rgba(0, 0, 0, 0.8);
 
   /* Dice */
+  --dice-radius: var(--radius);
   --dice-bg-start: #ffffff;
   --dice-bg-end: #e0e0e0;
   --dice-dot-bg: #1a1a2e;
@@ -271,6 +272,7 @@ input {
   --glass-blur: none;
   --overlay-bg: rgba(80, 60, 40, 0.65);
   --overlay-bg-heavy: rgba(50, 40, 30, 0.8);
+  --dice-radius: 12px;
   --dice-bg-start: #f0e8d8;
   --dice-bg-end: #d8cfbc;
   --dice-dot-bg: #2c1810;

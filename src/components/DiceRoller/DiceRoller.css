@@ -29,7 +29,7 @@
 .dice {
   width: 56px;
   height: 56px;
-  border-radius: var(--radius);
+  border-radius: var(--dice-radius);
   background: linear-gradient(135deg, var(--dice-bg-start), var(--dice-bg-end));
   display: flex;
   align-items: center;
