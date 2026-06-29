@@ -31,6 +31,42 @@ export const THEMES: Theme[] = [
       { label: 'Mustard', value: '#c9a84c' },
     ],
   },
+  {
+    id: 'gilded-age',
+    name: 'Gilded Age',
+    colors: [
+      { label: 'Background', value: '#0d0a02' },
+      { label: 'Card', value: '#1e1810' },
+      { label: 'Gold', value: '#c9a84c' },
+      { label: 'Emerald', value: '#2d8a5e' },
+      { label: 'Ruby', value: '#8c2a2a' },
+      { label: 'Amethyst', value: '#7a4a8c' },
+    ],
+  },
+  {
+    id: 'synthwave',
+    name: 'Synthwave',
+    colors: [
+      { label: 'Background', value: '#0a001a' },
+      { label: 'Card', value: '#1a0033' },
+      { label: 'Cyan', value: '#00e5ff' },
+      { label: 'Neon', value: '#00ff7f' },
+      { label: 'Pink', value: '#ff0066' },
+      { label: 'Magenta', value: '#ff00ff' },
+    ],
+  },
+  {
+    id: 'canopy',
+    name: 'Canopy',
+    colors: [
+      { label: 'Forest', value: '#1a2418' },
+      { label: 'Card', value: '#243020' },
+      { label: 'Teal', value: '#4a8a7a' },
+      { label: 'Moss', value: '#5a8a4a' },
+      { label: 'Rust', value: '#8a4a3a' },
+      { label: 'Amber', value: '#c8a84a' },
+    ],
+  },
 ]
 
 const DEFAULT_THEME_ID = 'dark-neon'
