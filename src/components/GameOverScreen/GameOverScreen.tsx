@@ -29,7 +29,6 @@ export function GameOverScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
           <div className="gameover-players">
             {sorted.map((player, idx) => {
               const totalVal = calculateTotalValue(player.cash, player.portfolio, state.stockPrices);
-              const isFirst = idx === 0;
 
               return (
                 <div
@@ -37,33 +36,39 @@ export function GameOverScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
                   className="gameover-player-row glass"
                   style={{ borderLeftColor: winner.id === player.id ? 'var(--accent-yellow)' : player.color }}
                 >
-                  <span className="gameover-player-rank">{isFirst ? '👑' : `#${idx + 1}`}</span>
-                  <span className="player-row-name" style={{ color: player.color }}>
-                    {player.name}
-                  </span>
-                  <span className="player-row-total">${totalVal.toLocaleString()}</span>
-                  <span className="player-row-stats">
-                    <span className="player-row-stat">
-                      <span className="player-row-stat-icon">📈</span>
-                      <span className="player-row-stat-value">{player.totalTrades}</span>
+                  <div className="gameover-row-top">
+                    <span className="gameover-player-rank">{idx === 0 ? '👑' : `#${idx + 1}`}</span>
+                    <span className="player-row-name" style={{ color: player.color }}>
+                      {player.name}
                     </span>
-                    <span className="player-row-stat">
-                      <span className="player-row-stat-icon">📋</span>
-                      <span className="player-row-stat-value">{player.totalMeetings}</span>
+                    <span className="player-row-total">${totalVal.toLocaleString()}</span>
+                  </div>
+                  <div className="gameover-row-stats">
+                    <span className="gameover-stat">
+                      <span className="gameover-stat-label">Trades</span>
+                      <span className="gameover-stat-icon">📈</span>
+                      <span className="gameover-stat-value">{player.totalTrades}</span>
+                    </span>
+                    <span className="gameover-stat">
+                      <span className="gameover-stat-label">Meetings</span>
+                      <span className="gameover-stat-icon">📋</span>
+                      <span className="gameover-stat-value">{player.totalMeetings}</span>
                     </span>
                     {player.biggestDividend > 0 && (
-                      <span className="player-row-stat">
-                        <span className="player-row-stat-icon">💰</span>
-                        <span className="player-row-stat-value pos">+${player.biggestDividend.toFixed(2)}</span>
+                      <span className="gameover-stat">
+                        <span className="gameover-stat-label">Top Dividend</span>
+                        <span className="gameover-stat-icon">💰</span>
+                        <span className="gameover-stat-value pos">+${player.biggestDividend.toFixed(2)}</span>
                       </span>
                     )}
                     {player.totalFeesPaid > 0 && (
-                      <span className="player-row-stat">
-                        <span className="player-row-stat-icon">💸</span>
-                        <span className="player-row-stat-value neg">-${player.totalFeesPaid.toFixed(2)}</span>
+                      <span className="gameover-stat">
+                        <span className="gameover-stat-label">Fees Paid</span>
+                        <span className="gameover-stat-icon">💸</span>
+                        <span className="gameover-stat-value neg">-${player.totalFeesPaid.toFixed(2)}</span>
                       </span>
                     )}
-                  </span>
+                  </div>
                 </div>
               );
             })}

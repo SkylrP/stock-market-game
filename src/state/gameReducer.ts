@@ -68,11 +68,12 @@ function updatePlayer(state: GameState, playerId: number, updates: Partial<Playe
   };
 }
 
-function generateReelStrip(finalSymbol: SlotSymbol, length: number = 16): SlotSymbol[] {
+function generateReelStrip(finalSymbol: SlotSymbol): SlotSymbol[] {
   const strip: SlotSymbol[] = [];
-  for (let i = 0; i < length - 1; i++) {
+  for (let i = 0; i < 35; i++) {
     strip.push(SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)]);
   }
+  strip.push(finalSymbol);
   strip.push(finalSymbol);
   return strip;
 }
@@ -507,7 +508,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             symbol: s,
             spinning: true,
             offset: 0,
-            strip: generateReelStrip(s, 16),
+            strip: generateReelStrip(s),
           })),
           slotResult: result,
         },
