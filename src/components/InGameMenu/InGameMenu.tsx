@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { THEMES } from '../../themes';
+import { soundManager } from '../../game/sound';
 import './InGameMenu.css'
 
 interface Props {
@@ -14,6 +15,7 @@ export function InGameMenu({ onClose, onLeaveGame, onRestartGame, theme, onTheme
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [confirmRestart, setConfirmRestart] = useState(false);
   const [showTheme, setShowTheme] = useState(false);
+  const [soundOn, setSoundOn] = useState(!soundManager.muted);
 
   const handleLeave = () => {
     if (!confirmLeave) { setConfirmLeave(true); return }
@@ -50,6 +52,11 @@ export function InGameMenu({ onClose, onLeaveGame, onRestartGame, theme, onTheme
             <button className="game-menu-option" onClick={handleRestart}>
               <span className="game-menu-option-icon">🔄</span>
               <span className="game-menu-option-label">Restart Game</span>
+              <span className="game-menu-option-arrow">›</span>
+            </button>
+            <button className="game-menu-option" onClick={() => { soundManager.muted = !soundManager.muted; setSoundOn(!soundManager.muted); }}>
+              <span className="game-menu-option-icon">{soundOn ? '🔊' : '🔇'}</span>
+              <span className="game-menu-option-label">Sound: {soundOn ? 'On' : 'Off'}</span>
               <span className="game-menu-option-arrow">›</span>
             </button>
             <button className="game-menu-option" onClick={() => setShowTheme(true)}>

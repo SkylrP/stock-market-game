@@ -111,7 +111,7 @@ export function PlayerPanel({ onOpenLeaderboard, myPlayerIndex }: Props) {
         <div className="player-identity">
           <div className="player-indicator" style={{ backgroundColor: player.color }} />
           <span className="player-name">{player.name}</span>
-          <span className="player-rank clickable" onClick={onOpenLeaderboard} title="View Insider Transaction Report">#{rank} of {playerCount}</span>
+          <span className="player-rank clickable" onClick={onOpenLeaderboard} title="View Insider Transaction Report">{`#${rank} of ${playerCount}`}</span>
         </div>
         <div className="player-status">
           {!player.inMarket && (
@@ -138,7 +138,7 @@ export function PlayerPanel({ onOpenLeaderboard, myPlayerIndex }: Props) {
           </span>
         </div>
         <div className="stat">
-          <span className="stat-label">Portfolio</span>
+          <span className="stat-label">Invested</span>
           <span className="stat-value">
             ${fmt(isAnimating ? displayValues.portfolio : portfolioVal)}
             {deltasActive && deltas.portfolio !== 0 && (

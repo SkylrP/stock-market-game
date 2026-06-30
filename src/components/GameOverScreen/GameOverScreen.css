@@ -26,13 +26,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   animation: slideUp 0.4s ease-out;
 }
 
 .gameover-winner {
   text-align: center;
-  padding: 28px 24px 20px;
+  padding: 20px 24px;
   border-radius: var(--radius-lg);
   border: 2px solid var(--accent-yellow);
   background: var(--glass-bg);
@@ -42,20 +42,20 @@
 }
 
 .gameover-trophy {
-  font-size: 56px;
-  margin-bottom: 8px;
+  font-size: 40px;
+  margin-bottom: 4px;
   animation: pulse 1.5s ease-in-out infinite;
 }
 
 .gameover-title {
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--accent-yellow);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .gameover-subtitle {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -64,118 +64,77 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
 }
 
-.gameover-player-card {
-  position: relative;
-  padding: 16px;
-  border-left: 3px solid var(--border);
-  border-radius: var(--radius);
-}
-
-.gameover-crown {
-  position: absolute;
-  top: -8px;
-  right: 12px;
-  font-size: 24px;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-.player-name {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 4px;
-}
-
-.player-total-value {
-  font-size: 22px;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  color: var(--accent-green);
-  margin-bottom: 12px;
-}
-
-.player-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 16px;
-  margin-bottom: 12px;
-}
-
-.stat {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  padding: 4px 0;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.stat-label {
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.stat-value {
-  font-weight: 700;
-  font-family: var(--font-mono);
-  color: var(--text-primary);
-}
-
-.player-portfolio {
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
-}
-
-.portfolio-heading {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
-}
-
-.portfolio-row {
+.gameover-player-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  padding: 4px 0;
-  font-family: var(--font-mono);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--border);
+  font-size: 13px;
+  position: relative;
 }
 
-.pf-ticker {
-  font-weight: 700;
-  color: var(--text-primary);
-  width: 48px;
-}
-
-.pf-shares {
-  color: var(--text-secondary);
-  flex: 1;
-}
-
-.pf-pnl {
-  font-weight: 600;
-  width: 72px;
-  text-align: right;
-}
-
-.pf-pnl-percent {
-  font-size: 10px;
-  font-weight: 600;
-  width: 56px;
-  text-align: right;
-}
-
-.empty-portfolio {
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
-  font-size: 12px;
-  color: var(--text-muted);
+.gameover-player-rank {
+  font-size: 16px;
+  width: 20px;
   text-align: center;
+  flex-shrink: 0;
+}
+
+.player-row-name {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+  flex-shrink: 0;
+}
+
+.player-row-total {
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--accent-green);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.player-row-stats {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.player-row-stat {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.player-row-stat-icon {
+  font-size: 11px;
+}
+
+.player-row-stat-value {
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+.player-row-stat-value.pos {
+  color: var(--accent-green);
+}
+
+.player-row-stat-value.neg {
+  color: var(--accent-red);
 }
 
 .gameover-actions {

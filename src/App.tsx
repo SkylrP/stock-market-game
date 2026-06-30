@@ -18,6 +18,7 @@ import { HelpModal } from './components/HelpModal/HelpModal';
 import { LeaderboardModal } from './components/LeaderboardModal/LeaderboardModal';
 import { InGameMenu } from './components/InGameMenu/InGameMenu';
 import { GameOverScreen } from './components/GameOverScreen/GameOverScreen';
+import { SoundEffects } from './components/SoundEffects/SoundEffects';
 import { MenuScreen } from './components/MenuScreen/MenuScreen';
 import { MultiplayerLobby } from './components/MultiplayerLobby/MultiplayerLobby';
 import { MultiplayerSetupScreen } from './components/MultiplayerSetupScreen/MultiplayerSetupScreen';
@@ -210,6 +211,7 @@ function GameScreenContent({
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
       {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
       <SlotMachine />
+      <SoundEffects />
     </div>
   );
 }

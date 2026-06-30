@@ -1,6 +1,5 @@
 import { useGame } from '../../state/GameContext';
-import { StockTicker } from '../../types';
-import { calculateTotalValue, calculatePnl, getOwnedTickers } from '../../game/player';
+import { calculateTotalValue } from '../../game/player';
 import './GameOverScreen.css';
 
 export function GameOverScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
@@ -35,71 +34,36 @@ export function GameOverScreen({ onBackToMenu }: { onBackToMenu: () => void }) {
               return (
                 <div
                   key={player.id}
-                  className="gameover-player-card glass"
+                  className="gameover-player-row glass"
                   style={{ borderLeftColor: winner.id === player.id ? 'var(--accent-yellow)' : player.color }}
                 >
-                  {isFirst && <div className="gameover-crown">👑</div>}
-                  <h2 className="player-name" style={{ color: player.color }}>
+                  <span className="gameover-player-rank">{isFirst ? '👑' : `#${idx + 1}`}</span>
+                  <span className="player-row-name" style={{ color: player.color }}>
                     {player.name}
-                    {winner.id === player.id ? ' (Winner)' : ''}
-                  </h2>
-                  <div className="player-total-value">${totalVal.toLocaleString()}</div>
-
-                  <div className="player-stats">
-                    <div className="stat">
-                      <span className="stat-label">Cash</span>
-                      <span className="stat-value">${player.cash.toFixed(2)}</span>
-                    </div>
-                    <div className="stat">
-                      <span className="stat-label">Trades</span>
-                      <span className="stat-value">{player.totalTrades}</span>
-                    </div>
-                    <div className="stat">
-                      <span className="stat-label">Meetings</span>
-                      <span className="stat-value">{player.totalMeetings}</span>
-                    </div>
+                  </span>
+                  <span className="player-row-total">${totalVal.toLocaleString()}</span>
+                  <span className="player-row-stats">
+                    <span className="player-row-stat">
+                      <span className="player-row-stat-icon">📈</span>
+                      <span className="player-row-stat-value">{player.totalTrades}</span>
+                    </span>
+                    <span className="player-row-stat">
+                      <span className="player-row-stat-icon">📋</span>
+                      <span className="player-row-stat-value">{player.totalMeetings}</span>
+                    </span>
                     {player.biggestDividend > 0 && (
-                      <div className="stat">
-                        <span className="stat-label">Biggest Dividend</span>
-                        <span className="stat-value value-up">+${player.biggestDividend.toFixed(2)}</span>
-                      </div>
+                      <span className="player-row-stat">
+                        <span className="player-row-stat-icon">💰</span>
+                        <span className="player-row-stat-value pos">+${player.biggestDividend.toFixed(2)}</span>
+                      </span>
                     )}
                     {player.totalFeesPaid > 0 && (
-                      <div className="stat">
-                        <span className="stat-label">Fees Paid</span>
-                        <span className="stat-value value-down">-${player.totalFeesPaid.toFixed(2)}</span>
-                      </div>
+                      <span className="player-row-stat">
+                        <span className="player-row-stat-icon">💸</span>
+                        <span className="player-row-stat-value neg">-${player.totalFeesPaid.toFixed(2)}</span>
+                      </span>
                     )}
-                  </div>
-
-                  {getOwnedTickers(player.portfolio).length > 0 && (
-                    <div className="player-portfolio">
-                      <h3 className="portfolio-heading">Portfolio</h3>
-                      {getOwnedTickers(player.portfolio).map(ticker => {
-                        const shares = player.portfolio[ticker];
-                        const price = state.stockPrices[ticker];
-                        const { avgCost, pnl, pnlPercent } = calculatePnl(player.costBasis[ticker] || 0, shares, price);
-                        return (
-                          <div key={ticker} className="portfolio-row">
-                            <span className="pf-ticker">{ticker}</span>
-                            <span className="pf-shares">{shares} × ${price.toFixed(2)}</span>
-                            <span className={`pf-pnl ${pnl >= 0 ? 'value-up' : 'value-down'}`}>
-                              ${(shares * price).toFixed(2)}
-                            </span>
-                            <span className={`pf-pnl-percent ${pnl >= 0 ? 'value-up' : 'value-down'}`}>
-                              {pnl >= 0 ? '+' : ''}{pnlPercent.toFixed(1)}%
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {getOwnedTickers(player.portfolio).length === 0 && (
-                    <div className="player-portfolio empty-portfolio">
-                      <span>No stocks owned</span>
-                    </div>
-                  )}
+                  </span>
                 </div>
               );
             })}
