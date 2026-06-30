@@ -121,5 +121,16 @@ export function SoundEffects() {
     prevPhase.current = state.gamePhase;
   }, [state.gamePhase]);
 
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('button')) {
+        soundManager.buttonClick();
+      }
+    };
+    document.addEventListener('click', handler);
+    return () => document.removeEventListener('click', handler);
+  }, []);
+
   return null;
 }

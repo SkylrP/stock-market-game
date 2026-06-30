@@ -190,6 +190,11 @@ class SoundManager {
     this.tone(550, 0.1, 'triangle', 0.1, 0.14);
   }
 
+  buttonClick() {
+    this.tone(1200, 0.03, 'sine', 0.05);
+    this.noise(0.02, 0.03);
+  }
+
   feePaid() {
     this.sweep(350, 200, 0.3, 'sawtooth', 0.08);
     this.sweep(300, 150, 0.35, 'sawtooth', 0.06, 0.35);
