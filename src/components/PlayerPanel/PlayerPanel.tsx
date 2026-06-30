@@ -104,6 +104,11 @@ export function PlayerPanel({ onOpenLeaderboard, myPlayerIndex }: Props) {
   const deltasActive = deltas !== null;
   const isAnimating = deltasActive && displayValues.cash !== player.cash;
   const fmt = (v: number) => v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtShort = (v: number) => {
+    if (Math.abs(v) >= 1_000_000) return (v / 1_000_000).toFixed(1) + 'M';
+    if (Math.abs(v) >= 100_000) return (v / 1_000).toFixed(1) + 'K';
+    return fmt(v);
+  };
 
   return (
     <div className={`player-panel glass ${flipClass}`}>
@@ -129,7 +134,7 @@ export function PlayerPanel({ onOpenLeaderboard, myPlayerIndex }: Props) {
         <div className="stat">
           <span className="stat-label">Cash</span>
           <span className="stat-value">
-            ${fmt(isAnimating ? displayValues.cash : player.cash)}
+            ${fmtShort(isAnimating ? displayValues.cash : player.cash)}
             {deltasActive && deltas.cash !== 0 && (
               <span className={`stat-delta ${deltas.cash > 0 ? 'delta-up' : 'delta-down'}`}>
                 {' '}({deltas.cash > 0 ? '+' : ''}{fmt(deltas.cash)})
@@ -140,7 +145,7 @@ export function PlayerPanel({ onOpenLeaderboard, myPlayerIndex }: Props) {
         <div className="stat">
           <span className="stat-label">Invested</span>
           <span className="stat-value">
-            ${fmt(isAnimating ? displayValues.portfolio : portfolioVal)}
+            ${fmtShort(isAnimating ? displayValues.portfolio : portfolioVal)}
             {deltasActive && deltas.portfolio !== 0 && (
               <span className={`stat-delta ${deltas.portfolio > 0 ? 'delta-up' : 'delta-down'}`}>
                 {' '}({deltas.portfolio > 0 ? '+' : ''}{fmt(deltas.portfolio)})
@@ -151,7 +156,7 @@ export function PlayerPanel({ onOpenLeaderboard, myPlayerIndex }: Props) {
         <div className="stat total">
           <span className="stat-label">Total</span>
           <span className="stat-value highlight">
-            ${fmt(isAnimating ? displayValues.total : totalValue)}
+            ${fmtShort(isAnimating ? displayValues.total : totalValue)}
             {deltasActive && deltas.total !== 0 && (
               <span className={`stat-delta ${deltas.total > 0 ? 'delta-up' : 'delta-down'}`}>
                 {' '}({deltas.total > 0 ? '+' : ''}{fmt(deltas.total)})
@@ -171,7 +176,7 @@ export function PlayerPanel({ onOpenLeaderboard, myPlayerIndex }: Props) {
               }}
             />
           </div>
-          <span className="progress-label">${Math.floor(totalValue).toLocaleString()} / ${state.winAmount.toLocaleString()}</span>
+          <span className="progress-label">${fmtShort(totalValue)} / ${fmtShort(state.winAmount)}</span>
         </div>
       )}
     </div>
